@@ -22,7 +22,7 @@ function varargout = FC_NIRS_qualityControl(varargin)
 
 % Edit the above text to modify the response to help FC_NIRS_qualityControl
 
-% Last Modified by GUIDE v2.5 22-May-2014 22:13:42
+% Last Modified by GUIDE v2.5 29-May-2014 10:17:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,8 +68,8 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
-plotSDG(hObject, eventdata, handles);
-displayData(hObject, eventdata, handles);
+%plotSDG(hObject, eventdata, handles);
+%displayData(hObject, eventdata, handles);
 
 % UIWAIT makes FC_NIRS_qualityControl wait for user response (see UIRESUME)
 % uiwait(handles.fig_qc);
@@ -649,8 +649,8 @@ function conc_type_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global GUI_DATA;
  GUI_DATA.plotstate.Conc=get(hObject,'Value');
-plotSDG(hObject, eventdata, handles)
-displayData(hObject, eventdata, handles);
+%plotSDG(hObject, eventdata, handles)
+%displayData(hObject, eventdata, handles);
 displaySTD(hObject, eventdata, handles);
 displayDVARS(hObject, eventdata, handles);
 % Hints: contents = cellstr(get(hObject,'String')) returns conc_type contents as cell array
@@ -943,6 +943,103 @@ position1=get(handles.pannel_MotionArtifact,'Position');
 position2=get(handles.pannel_SNR,'Position');
 position=[position1(1)  position1(2)+abs(position1(4)-position2(4))/2 position2(3:4)];
 set(handles.pannel_SNR,'Visible','on');
-set(handles.pannel_SNR,'Position',position);
+set(handles.pannel_SNR,'Position',position1);
 set(handles.pannel_MotionArtifact,'Visible','off');
 % Hint: get(hObject,'Value') returns toggle state of togglebutton2
+
+
+% --- Executes on button press in pushbutton8.
+function pushbutton8_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton7.
+function pushbutton7_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton9.
+function pushbutton9_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit10_Callback(hObject, eventdata, handles)
+% hObject    handle to edit10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit10 as text
+%        str2double(get(hObject,'String')) returns contents of edit10 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit10_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit12_Callback(hObject, eventdata, handles)
+% hObject    handle to edit12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit12 as text
+%        str2double(get(hObject,'String')) returns contents of edit12 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit12_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit13_Callback(hObject, eventdata, handles)
+% hObject    handle to edit13 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit13 as text
+%        str2double(get(hObject,'String')) returns contents of edit13 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit13_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit13 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton10.
+function pushbutton10_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

@@ -22,7 +22,7 @@ function varargout = FC_NIRS_fcAnalysis(varargin)
 
 % Edit the above text to modify the response to help FC_NIRS_fcAnalysis
 
-% Last Modified by GUIDE v2.5 22-May-2014 22:23:36
+% Last Modified by GUIDE v2.5 09-Jun-2014 21:55:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,17 +64,18 @@ CORR_TYPE=zeros(2,1);
 
 handles.output = hObject;
 set(handles.directory_place,'String',cd);
-nirsfile=dir(strcat(cd,'\processedData\*procData.mat'));
+nirsfile=dir(fullfile(cd,'\*.proc'));
 nirslist=cell(1,length(nirsfile));
 if size(nirsfile,1)
 for i=1:size(nirsfile,1)
     nirslist{i}=nirsfile(i).name(1:end-12);
 end
 set(handles.list_sublist,'String',nirslist);
-tmp=load(strcat('processedData\',nirsfile(1).name));
-handles.SD=tmp.procResult.rawdata.SD;
+tmp=importdata(cd,'',nirsfile(1).name);
+handles.SD=tmp.SD;
 end
-
+%set default directory
+set(handles.out_directory,'String',fullfile(cd,'\','fc_Result'));
 % Update handles structure
 guidata(hObject, handles);
 
@@ -181,30 +182,31 @@ pathnm = uigetdir(cd, 'Pick the new directory' );
 if pathnm==0
     return;
 end
-
+set(handles.directory_place,'String',pathnm);
 %set work path
 %check whether exist FileFold 'RawData';
-if  size(dir(strcat(pathnm,'\processedData\*procData.mat')))<1
+if  size(dir(fullfile(pathnm,'*.proc')))<1
     uiwait(msgbox('There is no processed directory in the currently directory, please check your data','Erro'));
     return;
 end
-cd(pathnm);
+%cd(pathnm);
 %check whether exist nirs file;
-if length(dir('processedData\*procData.mat'))<1
-    uiwait(msgbox('Your  Folder has no processed nirs file, please check it ','Warning'));
+if length(dir(fullfile(pathnm,'*.proc')))<1
+    uiwait(msgbox('Your  Folder has no processed proc file, please check it ','Warning'));
     return
 end
-nirsfile=dir('processedData\*procData.mat');
+
+nirsfile=dir(fullfile(pathnm,'*.proc'));
 nirslist=cell(1,size(nirsfile,1));
 if size(nirsfile,1)
 for i=1:size(nirsfile,1)
-    nirslist{i}=nirsfile(i).name(1:end-12);
+    nirslist{i}=nirsfile(i).name;
 end
 set(handles.list_sublist,'String',nirslist);
 end
  %%set SD
- tmp=load(strcat('processedData\',nirsfile(1).name));
- handles.SD=tmp.procResult.rawdata.SD;
+ tmp=importdata(fullfile(pathnm,nirsfile(1).name));
+ handles.SD=tmp.SD;
 
 
 
@@ -503,7 +505,7 @@ function individual_analysis_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-set(hObject,'Enable','off');
+%set(hObject,'Enable','off');
 run_individual_analysis(hObject, eventdata, handles);
 set(hObject,'Enable','on');
 set(handles.button_viewResult1,'Enable','on');
@@ -520,7 +522,7 @@ if get(handles.Buttion_wholebrain,'Value')
     fc_type='whole';
 end
 
-fc_analsysis_viewResult1(get(handles.directory_place,'String'),...
+fc_analsysis_viewResult1(get(handles.out_directory,'String'),...
     get(handles.list_sublist,'String'),...
    fc_type,handles.SD);
 
@@ -618,3 +620,45 @@ signal_type=[1 1 1]';
 fc_analsysis_viewResult2(get(handles.directory_place,'String'),...
     signal_type,...
    fc_type,handles.SD);
+
+
+% --- Executes on button press in pushbutton17.
+function pushbutton17_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton17 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+pathnm = uigetdir(cd, 'Pick the new directory' );
+if pathnm==0
+    return;
+end
+set(handles.out_directory,'String',pathnm)
+
+
+
+function out_directory_Callback(hObject, eventdata, handles)
+% hObject    handle to out_directory (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of out_directory as text
+%        str2double(get(hObject,'String')) returns contents of out_directory as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function out_directory_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to out_directory (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function uipanel1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to uipanel1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called

@@ -22,9 +22,10 @@ function varargout = FC_NIRS_preprocessing(varargin)
 
 % Edit the above text to modify the response to help FC_NIRS_preprocessing
 
-% Last Modified by GUIDE v2.5 22-May-2014 22:11:38
+% Last Modified by GUIDE v2.5 03-Jun-2014 17:09:52
 
 % Begin initialization code - DO NOT EDIT
+%
 gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
@@ -54,9 +55,9 @@ function FC_NIRS_preprocessing_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for FC_NIRS_preprocessing
 %define global variable
-global GUI_DATA;
-
-GUI_DATA=initGUI_DATA(hObject,varargin);
+% global GUI_DATA;
+% 
+% GUI_DATA=initGUI_DATA(hObject,varargin);
 %GUI_DATA.
 %GUI_DATA.handles=handles;
 % set working directory
@@ -73,7 +74,37 @@ GUI_DATA=initGUI_DATA(hObject,varargin);
 %plotSDG(handles,hObject);
 %display Data
 %displayData();
-set(handles.directory_place,'String',cd);
+global PARA_LIST;
+global CAL_LIST;
+global Method_LIST;
+Method_LIST=get(handles.MethodList,'String');
+CAL_LIST=[];
+%init the PARA_LIST
+PARA_LIST=cell(4,1);
+PARA_LIST{1,1}=struct('name','OD2Conc',...
+    'discription','Discription:Convert optical density to concentrations.T',...
+    'para','[6 6]',...
+    'para_info','pathlength factors for each wavelength',...
+    'func','fc_nirs_OD2Conc');
+PARA_LIST{2,1}=struct('name','Detrend',...
+    'discription','Discription:Default values is 1.',...
+    'para','[1]',...
+    'para_info','The degrees of polynomial curve fitting:',...
+    'func','fc_nirs_Detrend');
+PARA_LIST{3,1}=struct('name','BandPass Filter',...
+    'discription','BandPass Filter,hpf -high pass filter frequency(Hz). default value[0.01 0.1]',...
+    'para','[0.01 0.1]',...
+    'para_info','BandPass Filter(Hz)[lpf hpf]:',...
+    'func','fc_nirs_BandpassFilt');
+
+PARA_LIST{4,1}=struct('name','Analysis tRange',...
+    'discription','The the time range to analysis ',...
+    'para','[0 0]',...
+    'para_info','Analysis time range(s):',...
+     'func','fc_nirs_tRange');
+
+set(handles.input_directory,'String',cd);
+set(handles.output_directory,'String',strcat(cd,'\procData'));
 handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
@@ -132,53 +163,20 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on selection change in display_directory.
-function display_directory_Callback(hObject, eventdata, handles)
-% hObject    handle to display_directory (see GCBO)
+% --- Executes on selection change in display_datalist.
+function display_datalist_Callback(hObject, eventdata, handles)
+% hObject    handle to display_datalist (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns display_directory contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from display_directory
-global GUI_DATA;
+% Hints: contents = cellstr(get(hObject,'String')) returns display_datalist contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from display_datalist
 
-n=get(handles.display_directory,'Value');
-filelist=get(handles.display_directory,'String');
-try
-plot_subject=filelist{n};
-catch
-    return
-end
-
-if strcmp(plot_subject,GUI_DATA.plotstate.selectedsubject)
-    return
-end
-%updata the global variable's 
-GUI_DATA.plotstate.selectedsubject=plot_subject;
-imported_data = importdata(strcat(GUI_DATA.plotstate.workpath,'\','RawData\',plot_subject));
-GUI_DATA.rawdata=imported_data;
-GUI_DATA.rawdata.SD.MeasListVis=GUI_DATA.rawdata.SD.MeasListAct;
-GUI_DATA.currentData=imported_data;
-GUI_DATA.currentData.SD.MeasListVis=GUI_DATA.rawdata.SD.MeasListAct;
-
-%reset the plotstate
-%GUI_DATA.plotstate.plotType=1;
-GUI_DATA.plotstate.linestyle={'-',':','--'};
-GUI_DATA.plotstate.plotlist=[];
-GUI_DATA.plotstate.plotOD=1;
-GUI_DATA.plotstate.Conc=0;
-GUI_DATA.plotstate.plot=[];
-GUI_DATA.plotstate.plotLst=[];
-
-%Update the displays
-setObject(hObject, eventdata, handles);
-plotSDG(hObject, eventdata, handles);
-displayData(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function display_directory_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to display_directory (see GCBO)
+function display_datalist_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to display_datalist (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -252,9 +250,9 @@ function axesSDG_ButtonDownFcn(hObject, eventdata, handles)
 restNIRS_AxesSDG_buttondown(hObject, eventdata, handles)
 
 
-% --- Executes on key press with focus on display_directory and none of its controls.
-function display_directory_KeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to display_directory (see GCBO)
+% --- Executes on key press with focus on display_datalist and none of its controls.
+function display_datalist_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to display_datalist (see GCBO)
 % eventdata  structure with the following fields (see UICONTROL)
 %	Key: name of the key that was pressed, in lower case
 %	Character: character interpretation of the key(s) that was pressed
@@ -263,9 +261,9 @@ function display_directory_KeyPressFcn(hObject, eventdata, handles)
 
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over display_directory.
-function display_directory_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to display_directory (see GCBO)
+% --- Otherwise, executes on mouse press in 5 pixel border or over display_datalist.
+function display_datalist_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to display_datalist (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -277,10 +275,9 @@ function precessing_run_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-global GUI_DATA
-set(hObject,'Enable','off');
+% set(hObject,'Enable','off');
 drawnow;
-restNIRS_Preprocessing(hObject, eventdata, handles);
+fc_NIRS_RUN_preprocessing(hObject, eventdata, handles)
 set(hObject,'Enable','on');
 drawnow;
 
@@ -827,21 +824,43 @@ function pushbutton7_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % ParentDir=uigetdir(pwd , 'Pick parent directory of dataset');
- change_directory( hObject, eventdata, handles );
+select_inputDirectory(hObject, eventdata, handles);
+%fc_NIRS_plotSDG(hObject, eventdata, handles);
+    
+function select_inputDirectory(hObject, eventdata, handles)
+pathnm = uigetdir(cd, 'Pick the new directory' );
+if pathnm==0
+    return;
+end
+set(handles.input_directory,'String',pathnm)
+%probe the existing file.
+nirsfilelist=dir(strcat(pathnm,'\','*.nirs'));
+%procfilelist=dir(strcat(pathnm,'\','*.proc'));
+datalist=[];
+if size(nirsfilelist,1)>0
+    for fileidx=1:size(nirsfilelist,1)
+        datalist{fileidx,1}=nirsfilelist(fileidx).name;
+    end
+end
+%set the input datalist.
+%set(handles.
+set(handles.display_datalist,'String',datalist);
+
+
 
 
 function directory_place_Callback(hObject, eventdata, handles)
-% hObject    handle to directory_place (see GCBO)
+% hObject    handle to input_directory (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of directory_place as text
-%        str2double(get(hObject,'String')) returns contents of directory_place as a double
+% Hints: get(hObject,'String') returns contents of input_directory as text
+%        str2double(get(hObject,'String')) returns contents of input_directory as a double
 
 
 % --- Executes during object creation, after setting all properties.
 function directory_place_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to directory_place (see GCBO)
+% hObject    handle to input_directory (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -857,3 +876,318 @@ function fig_processing_DeleteFcn(hObject, eventdata, handles)
 % hObject    handle to fig_processing (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+
+function input_directory_Callback(hObject, eventdata, handles)
+% hObject    handle to input_directory (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of input_directory as text
+%        str2double(get(hObject,'String')) returns contents of input_directory as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function input_directory_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to input_directory (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton8.
+function pushbutton8_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+pathnm = uigetdir(cd, 'Pick the new directory' );
+if pathnm==0
+    return;
+end
+set(handles.output_directory,'String',pathnm)
+
+
+
+% --- Executes on selection change in MethodList.
+function MethodList_Callback(hObject, eventdata, handles)
+% hObject    handle to MethodList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns MethodList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from MethodList
+
+
+% --- Executes during object creation, after setting all properties.
+function MethodList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to MethodList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in ConfigListbox.
+function ConfigListbox_Callback(hObject, eventdata, handles)
+% hObject    handle to ConfigListbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns ConfigListbox contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from ConfigListbox
+
+
+% --- Executes during object creation, after setting all properties.
+function ConfigListbox_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to ConfigListbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in CalListbox.
+function CalListbox_Callback(hObject, eventdata, handles)
+% hObject    handle to CalListbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% if get(gcf , 'SelectionType') , 'normal')
+% end
+% Hints: contents = cellstr(get(hObject,'String')) returns CalListbox contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from CalListbox
+global PARA_LIST;
+inputpara=[];
+if strcmp(get(gcf,'SelectionType'),'alt')
+    %inputpara=inputdlg()
+elseif strcmp(get(gcf,'SelectionType'),'normal')
+    %inputpara=inputdlg()
+elseif strcmp(get(gcf,'SelectionType'),'open')
+    callist=get(handles.CalListbox,'String');
+    selectValue=get(handles.CalListbox,'Value');
+    if isempty(callist)
+    return;
+    end
+    %assign the processing parameters 
+    %corresponding to processing method;
+%     inputpara=inputdlg(callist{selectValue},'parameters');
+%     inputpara=inputpara{1};
+% if ~isempty(inputpara)
+for i=1:size(PARA_LIST,1)
+    if ~isempty(strfind(PARA_LIST{i,1}.name,callist{selectValue,1}))
+        %inputpara=inputdlg(callist{selectValue},'parameters',PARA_LIST{i,1}.para);
+        inputpara=inputdlg(callist{selectValue},'parameters',1,{PARA_LIST{i,1}.para});
+        if isempty(inputpara)
+            return;        
+        end
+        inputpara=inputpara{1};
+        if ~isempty(inputpara)
+            PARA_LIST{i,1}.para=inputpara;
+        end
+        %set(handles.
+        break;
+    end
+    %   end
+end
+
+%set the processing information
+%    set(handles.ConfigListbox,'String',inputpara);
+end
+
+%show the processing information
+callist=get(handles.CalListbox,'String');
+selectValue=get(handles.CalListbox,'Value');
+if isempty(callist)
+    return;
+end
+
+% if ~isempty(inputpara)
+% set(handles.ConfigListbox,'String',...
+%     strcat(callist{selectValue,1},inputpara));
+% end
+%display the method information;
+display_methodInfo(hObject, eventdata, handles);
+% --- Executes during object creation, after setting all properties.
+function CalListbox_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to CalListbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton9.
+function pushbutton9_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global CAL_LIST;
+methodlist=get(handles.MethodList,'String');
+if ~isempty(methodlist)
+    selectValue=get(handles.MethodList,'Value');
+    calList=get(handles.CalListbox,'String');
+    calList=[calList;methodlist(selectValue')];
+    %CAL_LIST=[CAL_LIST;methodlist(selectValue')];
+    methodlist(selectValue')=[];
+    if isempty(methodlist)
+        set(handles.MethodList,'Value',0);
+    else 
+        set(handles.MethodList,'Value',1);
+    end
+     if isempty(calList)
+        set(handles.CalListbox,'Value',0);
+    else 
+        set(handles.CalListbox,'Value',1);
+    end
+    set(handles.MethodList,'String',methodlist);
+    set(handles.CalListbox,'String',calList);
+
+end
+display_methodInfo(hObject, eventdata, handles);
+
+% --- Executes on button press in pushbutton10.
+function pushbutton10_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%add by xjp.14/6/3
+global CAL_LIST;
+calList=get(handles.CalListbox,'String');
+if ~isempty(calList)
+    selectValue=get(handles.CalListbox,'Value');
+    methodlist=get(handles.MethodList,'String');
+    methodlist=[methodlist;calList(selectValue')];
+    calList(selectValue')=[];
+    if isempty(methodlist)
+        set(handles.MethodList,'Value',0);
+    else 
+        set(handles.MethodList,'Value',1);
+    end
+     if isempty(calList)
+        set(handles.CalListbox,'Value',0);
+    else 
+        set(handles.CalListbox,'Value',1);
+    end
+    set(handles.MethodList,'String',methodlist);
+    set(handles.CalListbox,'String',calList);
+    CAL_LIST=calList;
+end
+display_methodInfo(hObject, eventdata, handles);
+
+% --- Executes on button press in pushbutton11.
+function pushbutton11_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%show the raw data;
+input_directory=get(handles.input_directory,'String');
+FC_NIRS_displayTimeseries(input_directory);
+
+% --- Executes on button press in pushbutton12.
+function pushbutton12_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%show the result;
+output_directory=get(handles.output_directory,'String');
+FC_NIRS_displayTimeseries(output_directory);
+
+% --- Executes on button press in pushbutton13.
+function pushbutton13_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton13 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global CAL_LIST;
+calList=get(handles.CalListbox,'String');
+if size(calList,1)<2|get(handles.CalListbox,'Value')<2;
+    return
+else
+    selectValue=get(handles.CalListbox,'Value');
+    %swap the processing methods
+    tmp=calList(selectValue,1);
+    calList(selectValue,1)=calList(selectValue-1,1);
+    calList(selectValue-1,1)=tmp;
+    set(handles.CalListbox,'String',calList);
+    set(handles.CalListbox,'Value',selectValue-1);
+end
+CAL_LIST=get(handles.CalListbox,'String');
+display_methodInfo(hObject, eventdata, handles);
+
+% --- Executes on button press in pushbutton14.
+function pushbutton14_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton14 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global CAL_LIST;
+calList=get(handles.CalListbox,'String');
+if size(calList,1)<2|get(handles.CalListbox,'Value')...
+        >(size(calList,1)-1)
+    return
+else
+    selectValue=get(handles.CalListbox,'Value');
+    %swap the processing methods
+    tmp=calList(selectValue,1);
+    calList(selectValue,1)=calList(selectValue+1,1);
+    calList(selectValue+1,1)=tmp;
+    set(handles.CalListbox,'String',calList);
+    set(handles.CalListbox,'Value',selectValue+1);
+end
+CAL_LIST=get(handles.CalListbox,'String');
+display_methodInfo(hObject, eventdata, handles);
+
+% --- Executes during object creation, after setting all properties.
+function output_directory_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to output_directory (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function display_methodInfo(hObject, eventdata, handles)
+% hObject    handle to output_directory (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+global PARA_LIST;
+calList=get(handles.CalListbox,'String');
+selectValue=get(handles.CalListbox,'Value');
+if isempty(calList)
+   return; 
+end
+selected_method=calList{selectValue,1};
+
+for i=1:size(PARA_LIST,1)
+    if ~isempty(strfind(PARA_LIST{i,1}.name,selected_method))
+        tmp=cell(4,1);
+        tmp{1,1}=PARA_LIST{i,1}.name;
+        tmp{2,1}=strcat('.',PARA_LIST{i,1}.para_info,':');
+        tmp{3,1}=strcat('..',PARA_LIST{i,1}.para);
+        tmp{4,1}=strcat('.',PARA_LIST{i,1}.discription);
+        set(handles.ConfigListbox,'String',tmp);
+        set(handles.ConfigListbox,'Value',1);
+        %set(handles.
+        break;
+    end
+end
+%PARA_LIST
+%strfind

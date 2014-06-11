@@ -59,7 +59,7 @@ if nargin<2
     %error
     return;
 end
-handles.workplace=varargin{1};
+handles.data_path=varargin{1};
 handles.sublist=varargin{2};
 handles.fc_type=varargin{3};
 handles.SD=varargin{4};
@@ -110,7 +110,7 @@ if get(hObject,'Value')
 else
     set(hObject,'Value',1);
 end
-plot_individualResult(hObject, eventdata, handles);
+plot_individualResult(hObject, eventdata, handles,handles.data_path);
 % Hint: get(hObject,'Value') returns toggle state of checkbox_HbR
 
 
@@ -125,7 +125,7 @@ if get(hObject,'Value')
 else
     set(hObject,'Value',1);
 end
-plot_individualResult(hObject, eventdata, handles);
+plot_individualResult(hObject, eventdata, handles,handles.data_path);
 % Hint: get(hObject,'Value') returns toggle state of checkbox_HbO
 
 
@@ -140,7 +140,7 @@ if get(hObject,'Value')
 else
     set(hObject,'Value',1);
 end
-plot_individualResult(hObject, eventdata, handles);
+plot_individualResult(hObject, eventdata, handles,handles.data_path);
 % Hint: get(hObject,'Value') returns toggle state of checkbox_HbT
 
 
@@ -149,7 +149,7 @@ function subjects_list_Callback(hObject, eventdata, handles)
 % hObject    handle to subjects_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-plot_individualResult(hObject, eventdata, handles);
+plot_individualResult(hObject, eventdata, handles,handles.data_path);
 % Hints: contents = cellstr(get(hObject,'String')) returns subjects_list contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from subjects_list
 
