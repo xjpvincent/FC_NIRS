@@ -1,0 +1,2 @@
+fprint('hello world')
+figure
