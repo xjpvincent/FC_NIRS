@@ -22,7 +22,7 @@ function varargout = FC_NIRS_preprocessing(varargin)
 
 % Edit the above text to modify the response to help FC_NIRS_preprocessing
 
-% Last Modified by GUIDE v2.5 03-Jun-2014 17:09:52
+% Last Modified by GUIDE v2.5 26-Jun-2014 15:26:38
 
 % Begin initialization code - DO NOT EDIT
 %
@@ -81,9 +81,32 @@ PARA_LIST{3,1}=struct('name','BandPass Filter',...
 
 PARA_LIST{4,1}=struct('name','Analysis tRange',...
     'discription','The the time range to analysis ',...
-    'para','[0 0]',...
+    'para','[0 end]',...
     'para_info','Analysis time range(s):',...
      'func','fc_nirs_tRange');
+PARA_LIST{5,1}=struct('name','PCA_filter',...
+    'discription','The the time range to analysis ',...
+    'para','[0]',...
+    'para_info','component(s):',...
+     'func','fc_nirs_PCAfilter');
+ para.STDEVthresh='5';
+ para.AMPthresh='0.01';
+ para.tMotion='1';
+ para.tMask='1';
+ para.p='0.9';
+   
+PARA_LIST{6,1}=struct('name','MotionCorrect_Spline',...
+    'discription','The the time range to analysis ',...
+    'para',para,...
+    'para_info','stdEther:',...
+     'func','fc_nirs_MotionCorrect_Spline');
+     
+PARA_LIST{7,1}=struct('name','Intensity2OD',...
+    'discription','Log transformed to changes in optical density ',...
+    'para','no para',...
+    'para_info','no para',...
+     'func','fc_nirs_Intensity2OD');
+ 
 
 set(handles.input_directory,'String',cd);
 set(handles.output_directory,'String',strcat(cd,'\procData'));
@@ -810,7 +833,13 @@ select_inputDirectory(hObject, eventdata, handles);
 %fc_NIRS_plotSDG(hObject, eventdata, handles);
     
 function select_inputDirectory(hObject, eventdata, handles)
-pathnm = uigetdir(cd, 'Pick the new directory' );
+input_directory=get(handles.input_directory,'String');
+try
+pathnm = uigetdir(input_directory, 'Pick the new directory' );
+catch exception
+pathnm = uigetdir(cd, 'Pick the new directory' );    
+rethrow(exception)
+end
 if pathnm==0
     return;
 end
@@ -826,8 +855,12 @@ if size(nirsfilelist,1)>0
 end
 %set the input datalist.
 %set(handles.
-set(handles.display_datalist,'String',datalist);
-
+if ~isempty(datalist)
+    set(handles.display_datalist,'String',datalist);
+    set(handles.display_datalist,'Value',1);
+else
+     set(handles.display_datalist,'String',datalist);
+end
 
 
 
@@ -924,7 +957,104 @@ function ConfigListbox_Callback(hObject, eventdata, handles)
 % hObject    handle to ConfigListbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global PARA_LIST; 
+calList=get(handles.CalListbox,'String');
+selectValue=get(handles.CalListbox,'Value');
+selected_method=calList{selectValue,1};
+if ~isempty(strfind(selected_method,'MotionCorrect_Spline'))
+    clickValue=get(hObject,'Value');
+    para=PARA_LIST{6,1}.para;
+  
+    switch clickValue
+        case 1
+            return;
+        case 2
+            inputpara=inputdlg({'STDEVthresh'},'parameters',1,{para.STDEVthresh});
+            if isempty(inputpara)
+                return;
+            end
+            inputpara=inputpara{1};
+            if ~isempty(inputpara)
+                para.STDEvthresh=inputpara;
+            end
+        case 3
+            inputpara=inputdlg({'AMPthresh'},'parameters',1,{para.AMPthresh});
+            if isempty(inputpara)
+                return;
+            end
+            inputpara=inputpara{1};
+            if ~isempty(inputpara)
+                para.Ampthresh=inputpara;
+            end
+        case 4
+            inputpara=inputdlg({'tMotion'},'parameters',1,{para.tMotion});
+            if isempty(inputpara)
+                return;
+            end
+            inputpara=inputpara{1};
+            if ~isempty(inputpara)
+                para.tMotion=inputpara;
+            end
+        case 5
+            inputpara=inputdlg({'tMask'},'parameters',1,{para.tMask});
+            if isempty(inputpara)
+                return;
+            end
+            inputpara=inputpara{1};
+            if ~isempty(inputpara)
+                para.tMark=inputpara;
+            end
+        case 6
+            inputpara=inputdlg({'p'},'parameters',1,{para.p});
+            if isempty(inputpara)
+                return;
+            end
+            inputpara=inputpara{1};
+            if ~isempty(inputpara)
+                para.p=inputpara;
+            end
+    end
+  
+    
+    tmp{1,1}='MotionCorrect_Spline';
+    tmp{2,1}=strcat('STDEVthresh:-->',num2str(para.STDEVthresh));
+    tmp{3,1}=strcat('AMPthresh:--->',num2str(para.AMPthresh));
+    tmp{4,1}=strcat('tMotion:-->',num2str(para.tMotion));
+    tmp{5,1}=strcat('tMask:-->',num2str(para.tMask));
+    tmp{6,1}=strcat('p:-->',num2str(para.p));
+    tmp{7,1}='';
+    set(handles.ConfigListbox,'String',tmp);
+    set(handles.ConfigListbox,'Value',1);
+    PARA_LIST{6,1}.para=para;
+    return;
+end
 
+
+
+
+
+clickValue=get(hObject,'Value');
+
+if clickValue==3
+
+    selectValue=get(handles.CalListbox,'Value');
+    for j=1:size(PARA_LIST,1)
+    if ~isempty(strfind(PARA_LIST{j,1}.name,callist{selectValue,1}))
+        %inputpara=inputdlg(callist{selectValue},'parameters',PARA_LIST{i,1}.para);
+        inputpara=inputdlg(callist{selectValue},'parameters',1,{PARA_LIST{j,1}.para});
+        if isempty(inputpara)
+            return;        
+        end
+        inputpara=inputpara{1};
+        if ~isempty(inputpara)
+            PARA_LIST{j,1}.para=inputpara;
+        end
+        %set(handles.
+        break;
+    end
+    %   end
+end
+end
 % Hints: contents = cellstr(get(hObject,'String')) returns ConfigListbox contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from ConfigListbox
 
@@ -963,27 +1093,24 @@ elseif strcmp(get(gcf,'SelectionType'),'open')
     if isempty(callist)
     return;
     end
-    %assign the processing parameters 
-    %corresponding to processing method;
-%     inputpara=inputdlg(callist{selectValue},'parameters');
-%     inputpara=inputpara{1};
-% if ~isempty(inputpara)
-for i=1:size(PARA_LIST,1)
-    if ~isempty(strfind(PARA_LIST{i,1}.name,callist{selectValue,1}))
-        %inputpara=inputdlg(callist{selectValue},'parameters',PARA_LIST{i,1}.para);
-        inputpara=inputdlg(callist{selectValue},'parameters',1,{PARA_LIST{i,1}.para});
-        if isempty(inputpara)
-            return;        
-        end
-        inputpara=inputpara{1};
-        if ~isempty(inputpara)
-            PARA_LIST{i,1}.para=inputpara;
-        end
-        %set(handles.
-        break;
-    end
-    %   end
-end
+%double click change the para of the selected  method;
+% 
+% for i=1:size(PARA_LIST,1)
+%     if ~isempty(strfind(PARA_LIST{i,1}.name,callist{selectValue,1}))
+%         inputpara=inputdlg(callist{selectValue},'parameters',PARA_LIST{i,1}.para);
+%         inputpara=inputdlg(callist{selectValue},'parameters',1,{PARA_LIST{i,1}.para});
+%         if isempty(inputpara)
+%             return;        
+%         end
+%         inputpara=inputpara{1};
+%         if ~isempty(inputpara)
+%             PARA_LIST{i,1}.para=inputpara;
+%         end
+%         set(handles.
+%         break;
+%     end
+%       end
+% end
 
 %set the processing information
 %    set(handles.ConfigListbox,'String',inputpara);
@@ -1157,13 +1284,27 @@ if isempty(calList)
    return; 
 end
 selected_method=calList{selectValue,1};
+if ~isempty(strfind(selected_method,'MotionCorrect_Spline'))
+    tmp=cell(6,1);
+    para=PARA_LIST{6,1}.para;    
+    tmp{1,1}='MotionCorrect_Spline';
+    tmp{2,1}=strcat('STDEVthresh:-->',num2str(para.STDEVthresh));
+    tmp{3,1}=strcat('Ampthresh:--->',num2str(para.AMPthresh));
+    tmp{4,1}=strcat('tMotion:-->',num2str(para.tMotion));
+    tmp{5,1}=strcat('tMask:-->',num2str(para.tMask));
+    tmp{6,1}=strcat('p:-->',num2str(para.p));
+    tmp{7,1}='down';
+    set(handles.ConfigListbox,'String',tmp);
+    set(handles.ConfigListbox,'Value',1);
+    return;
+end
 
 for i=1:size(PARA_LIST,1)
     if ~isempty(strfind(PARA_LIST{i,1}.name,selected_method))
         tmp=cell(4,1);
         tmp{1,1}=PARA_LIST{i,1}.name;
         tmp{2,1}=strcat('.',PARA_LIST{i,1}.para_info,':');
-        tmp{3,1}=strcat('..',PARA_LIST{i,1}.para);
+        tmp{3,1}=strcat('-->>',PARA_LIST{i,1}.para);
         tmp{4,1}=strcat('.',PARA_LIST{i,1}.discription);
         set(handles.ConfigListbox,'String',tmp);
         set(handles.ConfigListbox,'Value',1);
@@ -1173,3 +1314,4 @@ for i=1:size(PARA_LIST,1)
 end
 %PARA_LIST
 %strfind
+%%set the spline correct  para;

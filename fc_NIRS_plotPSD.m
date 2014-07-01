@@ -2,12 +2,17 @@ function [out_arg]=fc_NIRS_plotPSD(hObject, eventdata, handles)
 %add by xjp;14/6/1
 %display corresponding  signal type;
 %DISPLAY.signal_type2global DISPLAY_DATA;
-
+global DISPLAY_DATA;
 global DISPLAY_STATE;
+if isfield(handles,'axesDisplayPSD');
+    axes(handles.axesDisplayPSD);
+else 
+    figure('color',[1 1 1]);
+end
 if isempty(DISPLAY_DATA)
     return;
 end
-DISPLAY_STATE=DISPLAY_STATE;
+
 signal_type1=DISPLAY_STATE.signal_type1;
 signal_type2=DISPLAY_STATE.signal_type2;
 display_data=[];
@@ -61,7 +66,6 @@ switch signal_type1
         end
 end
 %get the selected channels, lst;
-figure;
 if DISPLAY_STATE.plotType==0
     if isfield( DISPLAY_STATE, 'plotLst' )
         lst = DISPLAY_STATE.plotLst;

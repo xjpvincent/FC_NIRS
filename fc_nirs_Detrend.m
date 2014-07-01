@@ -2,6 +2,7 @@ function [ outdata ] = fc_nirs_Detrend( inputdata,p )
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
 var_name=fieldnames(inputdata);
+p=str2num(p);
 outdata=inputdata;
 if ~isprocOD(var_name)
     rawdata=inputdata.rawdata;

@@ -31,7 +31,7 @@ if strcmp(fc_type,'seed')
 end
 
 %%
-if strcmp(fc_type,'whole')
+if strcmp(fc_type,'wholebrain')
   if get(handles.checkbox_HbO,'Value');
         sidx=get(handles.subjects_list,'Value');
         subject=subjects{sidx}(1:end-5);

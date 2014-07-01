@@ -1,4 +1,5 @@
-function fc_NIRS_AxesSDG_buttondown(hObject, eventdata, handles)
+function fc_NIRS_AxesstdSDG_buttondown(hObject, eventdata, handles)
+
 
 global DISPLAY_DATA;
 global DISPLAY_STATE;
@@ -7,7 +8,7 @@ if isempty(DISPLAY_DATA.SD)
     return;
 end
 
-pos = get(handles.axesSDG,'CurrentPoint');
+pos = get(handles.axesstdSDG,'CurrentPoint');
 
 h = hObject;
 while ~strcmpi(get(h,'Type'),'figure')
@@ -68,16 +69,20 @@ elseif strcmp(mouseevent,'extend')
         DISPLAY_STATE.plot(end+[1:length(lst)],:) = [SD.MeasList(lst,1) idxMin*ones(length(lst),1)];
     end
 end
+
+ fc_NIRS_plotstdSDG(hObject, eventdata, handles);
+ fc_nirs_displaySTD(hObject, eventdata, handles);
 %plotSDG(hObject, eventdata, handles);
 %displayData(hObject, eventdata, handles);
-  fc_NIRS_plotSDG(hObject, eventdata, handles);
-  if isfield(handles,'axesDisplayData')|...
-        isfield(handles,'axesDisplayTailorData1') |...
-          isfield(handles,'axesDisplayTailorData2') 
-      fc_NIRS_plotData(hObject, eventdata, handles);
-  end
-  if isfield(handles,'axesDisplayPSD')
-      fc_NIRS_plotPSD(hObject,eventdata,handles);
-  end
+%   fc_NIRS_plotSDG(hObject, eventdata, handles);
+%   if isfield(handles,'axesDisplayData')|...
+%         isfield(handles,'axesDisplayTailorData1') |...
+%           isfield(handles,'axesDisplayTailorData2') 
+%       fc_NIRS_plotData(hObject, eventdata, handles);
+%   end
+%   if isfield(handles,'axesDisplayPSD')
+%       fc_NIRS_plotPSD(hObject,eventdata,handles);
+%   end
+
 
 

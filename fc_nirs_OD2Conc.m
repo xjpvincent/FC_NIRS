@@ -1,6 +1,7 @@
 function [ outdata ] = fc_nirs_OD2Conc( inputdata,ppf )
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
+ppf=str2num(ppf);
 var_name=fieldnames(inputdata);
 % for nidx=1:size(var_name)
 %     if isempty(strfind(var_name{nidx},'nomalizedOD')

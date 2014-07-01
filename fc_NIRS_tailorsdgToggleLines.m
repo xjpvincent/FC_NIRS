@@ -1,4 +1,4 @@
-function   fc_NIRS_sdgToggleLines(hObject, eventdata, handles)
+function   fc_NIRS_tailorsdgToggleLines(hObject, eventdata, handles)
 %This function is called when the user clicks on one of the meausrement
 %lines in the SDG window
 global DISPLAY_DATA;
@@ -9,7 +9,7 @@ end
 
 SD      = DISPLAY_DATA.SD;
 %handles=guihandles(GUI_DATA.handles);
-axesSDG =handles.axesSDG;
+axesSDG =handles.axestailorSDG;
 
 idx = eventdata;
 try
@@ -67,11 +67,13 @@ end
 % end
 
 DISPLAY_DATA.SD = SD;
-if isfield(handles,'axesDisplayData')|...
-        isfield(handles,'axesDisplayTailorData1')|...
-        isfield(handles,'axesDisplayTailorData2')
-    fc_NIRS_plotData(hObject, eventdata, handles);
-end
-if isfield(handles,'axesDisplayPSD')
-    fc_NIRS_plotPSD(hObject,eventdata,handles);
-end
+fc_NIRS_plottailorData(hObject, eventdata, handles);
+% if isfield(handles,'axesDisplayData')|...
+%         isfield(handles,'axesDisplayTailorData1')|...
+%         isfield(handles,'axesDisplayTailorData2')
+%     fc_NIRS_plotData(hObject, eventdata, handles);
+% end
+% if isfield(handles,'axesDisplayPSD')
+%     fc_NIRS_plotPSD(hObject,eventdata,handles);
+% end
+

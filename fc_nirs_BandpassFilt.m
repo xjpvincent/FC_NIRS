@@ -23,6 +23,7 @@ function [outdata] = fc_nirs_BandpassFilt( inputdata, band )
 % 
 %
 % need to modified   
+band=str2num(band);
 hpf=band(1);
 lpf=band(2);
 var_name=fieldnames(inputdata);

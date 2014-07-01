@@ -1,4 +1,4 @@
-function fc_NIRS_plotSDG(hObject, eventdata, handles)
+function fc_NIRS_plottailorSDG(hObject, eventdata, handles)
 %==========================================================================
 % This function is used to plot Sourser and Decter position 
 %
@@ -13,7 +13,7 @@ global DISPLAY_DATA;
 global DISPLAY_STATE;
 %clear gca;
 if isempty(DISPLAY_DATA)
-    axes(handles.axesSDG)
+    axes(handles.axestailorSDG)
     cla;
     return;
 end
@@ -37,7 +37,7 @@ line_color=[0 0 1;
              0.8 0.8 0.8];
 
 %handles=guihandles(GUI_DATA.handles);
-axesSDG=handles.axesSDG;
+axesSDG=handles.axestailorSDG;
 axis(axesSDG, [SD.xmin SD.xmax SD.ymin SD.ymax]);
 axis(axesSDG, 'image')
 set(axesSDG,'xticklabel','')
@@ -94,7 +94,7 @@ if isfield( DISPLAY_STATE, 'plot' )
                 h = line( [SD.SrcPos(DISPLAY_STATE.plot(idx,1),1) SD.DetPos(DISPLAY_STATE.plot(idx,2),1)], ...
                     [SD.SrcPos(DISPLAY_STATE.plot(idx,1),2) SD.DetPos(DISPLAY_STATE.plot(idx,2),2)] );
                 set(h,'color',DISPLAY_STATE.color(idx,:));
-                set(h,'ButtonDownFcn',sprintf('fc_NIRS_sdgToggleLines(gcbo,[%d],guidata(gcbo))',idx));
+                set(h,'ButtonDownFcn',sprintf('fc_NIRS_tailorsdgToggleLines(gcbo,[%d],guidata(gcbo))',idx));
                 set(h,'linewidth',2);
                 
                 if ~isfield(SD,'MeasListVis')

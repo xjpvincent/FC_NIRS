@@ -21,6 +21,7 @@ signal_type1=DISPLAY_STATE.signal_type1;
 signal_type2=DISPLAY_STATE.signal_type2;
 display_data=[];
 display_t=[];
+signal_type1=2;
 switch signal_type1
     case 1
         %raw od
@@ -70,7 +71,11 @@ switch signal_type1
                 display_t=DISPLAY_DATA.procConc.t;
         end
 end
-stdEvthresh2=DISPLAY_STATE.stdEvthresh2;
+if ~isfield(DISPLAY_STATE,'stdEvthresh2')
+    return;
+end
+stdEvthresh2=DISPLAY_STATE.stdEvthresh2
+
 %get the selected channels, lst;
 diff_data=diff(display_data);
 root_square=sqrt(mean([diff_data.*diff_data]'));

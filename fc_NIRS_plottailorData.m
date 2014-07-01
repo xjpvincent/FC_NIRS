@@ -1,20 +1,11 @@
-function [outdata]=fc_nirs_displaySTD(hObject, eventdata, handles);
+function [outdata]=fc_NIRS_plottailorData(hObject, eventdata, handles);
 global DISPLAY_DATA;
 global DISPLAY_STATE;
-window_length=DISPLAY_STATE.wl;
-stdThre=DISPLAY_STATE.stdEvthresh1;
-try 
-start_time1=str2num(get(handles.start_time1,'String'));
-end_time1=str2num(get(handles.end_time1,'String'));
-catch
-    display('check out the tRange you input.\n');
-    return;
-end
 if isempty(DISPLAY_DATA)
     return;
 end
-if isfield(handles,'axesDisplaySTD')
-    displayAxes =handles.axesDisplaySTD;
+if isfield(handles,'axesDisplayData')
+    displayAxes =handles.axesDisplayData;
 elseif isfield(handles,'axesDisplayTailorData1')&...
         isfield(handles,'axesDisplayTailorData2') 
     displayAxes=handles.axesDisplayTailorData1;
@@ -85,7 +76,8 @@ switch signal_type1
         end
 end
 %get the selected channels, lst;
-if DISPLAY_STATE.plotType==0
+
+if get(handles.select_Ch,'Value')
     if isfield( DISPLAY_STATE, 'plotLst' )
         lst = DISPLAY_STATE.plotLst;
         lst2 = [];
@@ -101,31 +93,65 @@ if DISPLAY_STATE.plotType==0
     try
     if ~isempty(lst)
         cla              
-        %xjp_plotSelectedCh(display_data,display_t,plotLst,lst);
-        tindex=find(display_t>=start_time1&display_t<=end_time1);
-        xjp_plotSelectedChSTD(display_data(tindex,:),display_t(tindex),plotLst,...
-            lst,window_length,stdThre);
-         %this use to be clf but that crashed
+        xjp_plotSelectedCh(display_data,display_t,plotLst,lst);
+    else
+        cla %this use to be clf but that crashed
     end
     catch        
     end
 end
-if DISPLAY_STATE.plotType==1
+if get(handles.all_Ch,'Value')
     %display all channels' Data;
-    cla 
-     tindex=find(display_t>=start_time1&display_t<=end_time1);
-    xjp_plotTracesSTD(display_data(tindex,:),display_t(tindex),...
-    window_length,stdThre);
+    cla
+    col=size(display_data,2);    
+    xjp_plotTraces(display_data,display_t);
+end
+clc
+%%set startTime, preTime and postTime
+if isfield(handles,'edit_startTime')&...
+        isfield(handles,'edit_preTime')&...
+        isfield(handles,'edit_postTime')
+
+try
+startTime=str2num(get(handles.edit_startTime,'String'));
+preTime=str2num(get(handles.edit_preTime,'String'));
+postTime=str2num(get(handles.edit_postTime,'String'));
+
+axesDisplayTailorData1=handles.axesDisplayTailorData1;
+axes(axesDisplayTailorData1);
+scale=axis;
+line([startTime startTime],[scale(3) scale(4)],...
+    'LineStyle','--','Color',[1,0,0]);
+line([startTime-preTime startTime-preTime],[scale(3) scale(4)],...
+    'LineStyle','--','Color',[0,0,1]);
+line([startTime+postTime startTime+postTime],[scale(3) scale(4)],...
+    'LineStyle','--','Color',[0,0,1]);
+catch
+    if isfield(handles,'axesDisplayTailorData2')
+    axes(handles.axesDisplayTailorData2)
+    cla
+    end
+    return
+end
 end
 
-
+%plot axesDisplayTailorData2
+ if isfield( DISPLAY_STATE, 'plotLst' )
+if isfield(handles,'axesDisplayTailorData2')
+    axes(handles.axesDisplayTailorData2)
+    cla
+    tindex=find((display_t<(startTime+postTime))...
+        &(display_t>(startTime-preTime)));
+    xjp_plotSelectedCh(display_data(tindex,:),...
+        display_t(tindex),plotLst,lst);
+end
+ end
 
 
 
 function h=xjp_plotSelectedCh(signal,t,plotLst,lst)
 global DISPLAY_STATE;
 hold on
-axis auto
 for ii=length(lst):-1:1
     h=plot(t,...
         signal( :, plotLst(lst(ii))));
@@ -153,43 +179,8 @@ end
 
 
 
-function h=xjp_plotSelectedChSTD(signal,t,plotLst,lst,window_length,stdThre)
-global DISPLAY_STATE;
 
-for ii=length(lst):-1:1
-    sig_std=movingstd(signal(:,plotLst(lst(ii))),round(window_length/abs(t(1)-t(2))),'central');
-    t1=t(window_length/(2*abs(t(1)-t(2))):end-window_length/(2*abs(t(1)-t(2))));
-    sig_std1=sig_std(window_length/(2*abs(t(1)-t(2))):end-window_length/(2*abs(t(1)-t(2))));
-   % figure
-    h=plot(t1,sig_std1);
-    hold on;
-    axis auto
-    m_std=mean(sig_std);
-    s_std=std(sig_std);
-    
-    h1=plot(t,(t>0)*(m_std+stdThre*s_std));
-    set(h,'color',DISPLAY_STATE.color(lst(ii),:));
-    set(h1,'color',DISPLAY_STATE.color(lst(ii),:));
-    %  set(h,'linewidth',1);
-    hold on
-end
-grid on;
- line([t(1) t(1)],ylim ,'LineWidth',1,'Color',[.1 .1 .1],'LineStyle','--');
- line([t(end) t(end)],ylim,'LineWidth',1,'Color',[.1 .1 .1],'LineStyle','--');
-ylabel('std of timeseries');
-xlabel('time');
-hold off
 
-function h=xjp_plotTracesSTD(signal,t,window_length,stdThre,traceColors)
-cla
-std_sig=zeros(size(signal));
-for i=1:size(signal,2)
-    std_sig(:,i)=movingstd(signal(:,i),round(window_length/abs(t(1)-t(2))),'central');
-    m_std=mean(std_sig(:,i));
-    s_std=std(std_sig(:,i));
-    std_sig(:,i)=std_sig(:,i)>(m_std+stdThre*s_std);
-end
-t1=t(window_length/(2*abs(t(1)-t(2))):end-window_length/(2*abs(t(1)-t(2))));
-std_sig1=std_sig(window_length/(2*abs(t(1)-t(2))):end-window_length/(2*abs(t(1)-t(2))),:);
-h=imagesc(t1,1:size(signal,2),std_sig1');
+
+
 

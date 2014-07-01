@@ -4,9 +4,16 @@ global DISPLAY_STATE;
 if isempty(DISPLAY_DATA)
     return;
 end
+if isfield(handles,'axesDisplayData')
+    displayAxes =handles.axesDisplayData;
+elseif isfield(handles,'axesDisplayTailorData1')&...
+        isfield(handles,'axesDisplayTailorData2') 
+    displayAxes=handles.axesDisplayTailorData1;
+   
+end
 %get the handles of fig_processing
 %fig_processing=guihandles(GUI_DATA.fig_processing);
-displayAxes =handles.axesDisplayData;
+
 if ~displayAxes
     return;
 end
@@ -94,10 +101,52 @@ if DISPLAY_STATE.plotType==0
 end
 if DISPLAY_STATE.plotType==1
     %display all channels' Data;
+    cla
     col=size(display_data,2);    
     xjp_plotTraces(display_data,display_t);
 end
 clc
+%%set startTime, preTime and postTime
+if isfield(handles,'edit_startTime')&...
+        isfield(handles,'edit_preTime')&...
+        isfield(handles,'edit_postTime')
+
+try
+startTime=str2num(get(handles.edit_startTime,'String'));
+preTime=str2num(get(handles.edit_preTime,'String'));
+postTime=str2num(get(handles.edit_postTime,'String'));
+
+axesDisplayTailorData1=handles.axesDisplayTailorData1;
+axes(axesDisplayTailorData1);
+scale=axis;
+line([startTime startTime],[scale(3) scale(4)],...
+    'LineStyle','--','Color',[1,0,0]);
+line([startTime-preTime startTime-preTime],[scale(3) scale(4)],...
+    'LineStyle','--','Color',[0,0,1]);
+line([startTime+postTime startTime+postTime],[scale(3) scale(4)],...
+    'LineStyle','--','Color',[0,0,1]);
+catch
+    if isfield(handles,'axesDisplayTailorData2')
+    axes(handles.axesDisplayTailorData2)
+    cla
+    end
+    return
+end
+end
+
+%plot axesDisplayTailorData2
+ if isfield( DISPLAY_STATE, 'plotLst' )
+if isfield(handles,'axesDisplayTailorData2')
+    axes(handles.axesDisplayTailorData2)
+    cla
+    tindex=find((display_t<(startTime+postTime))...
+        &(display_t>(startTime-preTime)));
+    xjp_plotSelectedCh(display_data(tindex,:),...
+        display_t(tindex),plotLst,lst);
+end
+ end
+
+
 
 function h=xjp_plotSelectedCh(signal,t,plotLst,lst)
 global DISPLAY_STATE;

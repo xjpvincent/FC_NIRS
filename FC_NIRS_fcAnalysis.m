@@ -22,7 +22,7 @@ function varargout = FC_NIRS_fcAnalysis(varargin)
 
 % Edit the above text to modify the response to help FC_NIRS_fcAnalysis
 
-% Last Modified by GUIDE v2.5 09-Jun-2014 21:55:38
+% Last Modified by GUIDE v2.5 22-Jun-2014 00:04:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -519,7 +519,7 @@ if get(handles.Buttion_Seedbased,'Value')
    fc_type='seed';
 end
 if get(handles.Buttion_wholebrain,'Value')
-    fc_type='whole';
+    fc_type='wholebrain';
 end
 
 fc_analsysis_viewResult1(get(handles.out_directory,'String'),...
@@ -662,3 +662,13 @@ function uipanel1_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to uipanel1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+delete(hObject);

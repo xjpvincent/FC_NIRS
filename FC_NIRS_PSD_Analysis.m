@@ -1,35 +1,35 @@
-function varargout = FC_NIRS_displayTimeseries(varargin)
-% FC_NIRS_DISPLAYTIMESERIES MATLAB code for FC_NIRS_displayTimeseries.fig
-%      FC_NIRS_DISPLAYTIMESERIES, by itself, creates a new FC_NIRS_DISPLAYTIMESERIES or raises the existing
+function varargout = FC_NIRS_PSD_Analysis(varargin)
+% FC_NIRS_PSD_ANALYSIS MATLAB code for FC_NIRS_PSD_Analysis.fig
+%      FC_NIRS_PSD_ANALYSIS, by itself, creates a new FC_NIRS_PSD_ANALYSIS or raises the existing
 %      singleton*.
 %
-%      H = FC_NIRS_DISPLAYTIMESERIES returns the handle to a new FC_NIRS_DISPLAYTIMESERIES or the handle to
+%      H = FC_NIRS_PSD_ANALYSIS returns the handle to a new FC_NIRS_PSD_ANALYSIS or the handle to
 %      the existing singleton*.
 %
-%      FC_NIRS_DISPLAYTIMESERIES('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in FC_NIRS_DISPLAYTIMESERIES.M with the given input arguments.
+%      FC_NIRS_PSD_ANALYSIS('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in FC_NIRS_PSD_ANALYSIS.M with the given input arguments.
 %
-%      FC_NIRS_DISPLAYTIMESERIES('Property','Value',...) creates a new FC_NIRS_DISPLAYTIMESERIES or raises the
+%      FC_NIRS_PSD_ANALYSIS('Property','Value',...) creates a new FC_NIRS_PSD_ANALYSIS or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before FC_NIRS_displayTimeseries_OpeningFcn gets called.  An
+%      applied to the GUI before FC_NIRS_PSD_Analysis_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to FC_NIRS_displayTimeseries_OpeningFcn via varargin.
+%      stop.  All inputs are passed to FC_NIRS_PSD_Analysis_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help FC_NIRS_displayTimeseries
+% Edit the above text to modify the response to help FC_NIRS_PSD_Analysis
 
-% Last Modified by GUIDE v2.5 01-Jun-2014 11:41:10
+% Last Modified by GUIDE v2.5 22-Jun-2014 11:13:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @FC_NIRS_displayTimeseries_OpeningFcn, ...
-                   'gui_OutputFcn',  @FC_NIRS_displayTimeseries_OutputFcn, ...
+                   'gui_OpeningFcn', @FC_NIRS_PSD_Analysis_OpeningFcn, ...
+                   'gui_OutputFcn',  @FC_NIRS_PSD_Analysis_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,14 +44,14 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before FC_NIRS_displayTimeseries is made visible.
-function FC_NIRS_displayTimeseries_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before FC_NIRS_PSD_Analysis is made visible.
+function FC_NIRS_PSD_Analysis_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to FC_NIRS_displayTimeseries (see VARARGIN)
-% Choose default command line output for FC_NIRS_displayTimeseries
+% varargin   command line arguments to FC_NIRS_PSD_Analysis (see VARARGIN)
+% Choose default command line output for FC_NIRS_PSD_Analysis
 
 %add by xjp.
 %clear the command window
@@ -110,7 +110,7 @@ if size(nirsfilelist,1)>0
         set(handles.signal_type2,'Value',1);
         set(handles.signal_type1,'Enable','on');
         set(handles.signal_type2,'Enable','on');
-        set(handles.show_psd,'Enable','on');
+       % set(handles.fc_NIRS_plotPSD,'Enable','on');
         datalist=cell(size(nirsfilelist,1));
          for fileidx=1:size(nirsfilelist,1)
             datalist{fileidx,1}=nirsfilelist(fileidx).name;
@@ -126,7 +126,7 @@ else
         set(handles.display_datalist,'Value',1);
         set(handles.signal_type1,'Enable','on');
         set(handles.signal_type2,'Enable','on');
-        set(handles.show_psd,'Enable','on');
+     %   set(handles.fc_NIRS_plotPSD,'Enable','on');
         for fileidx=1:size(procfilelist,1)
             datalist{fileidx,1}=procfilelist(fileidx).name;
         end
@@ -152,7 +152,7 @@ else
     set(handles.signal_type2,'String',SIGNAL_TYPE3);
     set(handles.signal_type1,'Enable','off');
     set(handles.signal_type2,'Enable','off');
-    set(handles.show_psd,'Enable','off'); 
+%     set(handles.show_psd,'Enable','off'); 
     DISPLAY_DATA=[];
 end
 if ~isempty(DISPLAY_DATA)
@@ -172,7 +172,7 @@ if israwConc(var_name)
 else
     showsignal(3)=0;
 end
-if isprocConc(var_name)
+if israwConc(var_name)
      showsignal(4)=1;
 else
     showsignal(4)=0;
@@ -185,12 +185,12 @@ set(handles.signal_type1,'String',signal_type);
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes FC_NIRS_displayTimeseries wait for user response (see UIRESUME)
+% UIWAIT makes FC_NIRS_PSD_Analysis wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = FC_NIRS_displayTimeseries_OutputFcn(hObject, eventdata, handles) 
+function varargout = FC_NIRS_PSD_Analysis_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -209,7 +209,7 @@ global DISPLAY_STATE;
 if get(hObject,'Value')
     set(handles.all_channels,'Value',0);
     DISPLAY_STATE.plotType=0;
-    fc_NIRS_plotData(hObject, eventdata, handles);
+    fc_NIRS_plotPSD(hObject, eventdata, handles);
 else
     set(hObject,'Value',1);
     DISPLAY_STATE.ployType=0;
@@ -226,7 +226,7 @@ global DISPLAY_STATE;
 if get(hObject,'Value')
     set(handles.selected_channels,'Value',0);
      DISPLAY_STATE.plotType=1;
-    fc_NIRS_plotData(hObject, eventdata, handles);
+    fc_NIRS_plotPSD(hObject, eventdata, handles);
 else
     set(hObject,'Value',1);
      DISPLAY_STATE.ployType=1;
@@ -278,7 +278,7 @@ else
     set(handles.signal_type2,'Value',1);
 end
 %display the Data
-fc_NIRS_plotData(hObject, eventdata, handles);
+fc_NIRS_plotPSD(hObject, eventdata, handles);
         
 
 
@@ -308,7 +308,7 @@ global DISPLAY_STATE;
 val=get(hObject,'Value');
 DISPLAY_STATE.signal_type2=val;
 %display the Data
-fc_NIRS_plotData(hObject, eventdata, handles);
+fc_NIRS_plotPSD(hObject, eventdata, handles);
 % Hints: contents = cellstr(get(hObject,'String')) returns signal_type2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from signal_type2
 
@@ -350,8 +350,8 @@ global SIGNAL_TYPE2;
 global SIGNAL_TYPE3;
 global SIGNAL_TYPE4;
 
-
-pathnm = uigetdir(cd, 'Pick the new directory' );
+pathnm=get(handles.input_directory,'String');
+pathnm = uigetdir(pathnm, 'Pick the new directory' );
 if pathnm==0
     return;
 end
@@ -371,7 +371,7 @@ if size(nirsfilelist,1)>0
         set(handles.signal_type2,'Value',1);
         set(handles.signal_type1,'Enable','on');
         set(handles.signal_type2,'Enable','on');
-        set(handles.show_psd,'Enable','on');
+%        set(handles.show_psd,'Enable','on');
         datalist=cell(size(nirsfilelist,1),1);
          for fileidx=1:size(nirsfilelist,1)
             datalist{fileidx,1}=nirsfilelist(fileidx).name;
@@ -388,7 +388,7 @@ else
         set(handles.display_datalist,'Value',1);
         set(handles.signal_type1,'Enable','on');
         set(handles.signal_type2,'Enable','on');
-        set(handles.show_psd,'Enable','on');
+      %  set(handles.show_psd,'Enable','on');
         for fileidx=1:size(procfilelist,1)
             datalist{fileidx,1}=procfilelist(fileidx).name;
         end
@@ -408,7 +408,6 @@ else
     set(handles.signal_type2,'String',SIGNAL_TYPE3);
     set(handles.signal_type1,'Enable','off');
     set(handles.signal_type2,'Enable','off');
-    set(handles.show_psd,'Enable','off'); 
     DISPLAY_DATA=[];
 end
   fc_NIRS_plotSDG(hObject, eventdata, handles);
@@ -462,7 +461,7 @@ end
 signal_type=SIGNAL_TYPE2(find(showsignal==1));
 set(handles.signal_type1,'String',signal_type);
 fc_NIRS_plotSDG(hObject, eventdata, handles);
-fc_NIRS_plotData(hObject, eventdata, handles);
+fc_NIRS_plotPSD(hObject, eventdata, handles);
 
 
 % Hints: contents = cellstr(get(hObject,'String')) returns display_datalist contents as cell array

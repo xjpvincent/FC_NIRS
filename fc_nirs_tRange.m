@@ -2,6 +2,7 @@ function [ outdata ] = fc_nirs_tRange(inputdata,tRange )
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
 %tRange=str2num(tRange);
+tRange=str2num(tRange);
 var_name=fieldnames(inputdata);
 outdata=inputdata;
 if length(tRange<3);
