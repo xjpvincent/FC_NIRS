@@ -67,14 +67,8 @@ if length(varargin)==1
     set(handles.father_handles.output_directory,'Enable','off');
     set(handles.father_handles.choose_outdirectory,'Enable','off');
 end
-
-
-
 global SIGNAL_TYPE2;
-
-
 global DISPLAY_DATA;
-
 %set the popbuttion;
 var_name=fieldnames(DISPLAY_DATA);
 if israwdata(var_name)
@@ -465,6 +459,49 @@ function pushbutton9_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+%get start time;
+startTime=str2num(get(handles.edit_startTime,'String'));
+preTime=str2num(get(handles.edit_preTime,'String')); 
+postTime=str2num(get(handles.edit_postTime,'String'));
+value_flag=[1 1 1];
+if isempty(startTime)
+    value_flag(1)=0;
+end
+%get pre time;
+if isempty(preTime)
+    value_flag(2)=0;
+end
+%get post time
+   
+if isempty(postTime)
+    value_flag(3)=0;
+end
+if sum(value_flag)<3
+    for tmp=1:5
+    if value_flag(1)==0;
+        set(handles.edit_startTime,'BackgroundColor',[1 0 0]);
+    end
+    if value_flag(2)==0;
+        set(handles.edit_preTime,'BackgroundColor',[1 0 0]);
+    end
+    if value_flag(3)==0;
+        set(handles.edit_postTime,'BackgroundColor',[1 0 0]);
+    end
+    pause(0.1);
+     if value_flag(1)==0;
+        set(handles.edit_startTime,'BackgroundColor',[1 1 1]);
+    end
+    if value_flag(2)==0;
+        set(handles.edit_preTime,'BackgroundColor',[1 1 1]);
+    end
+    if value_flag(3)==0;
+        set(handles.edit_postTime,'BackgroundColor',[1 1 1]);
+    end
+    pause(0.1);
+    end
+    return;
+end
+
 startTime=str2num(get(handles.edit_startTime,'String'));
 preTime=str2num(get(handles.edit_preTime,'String'));
 postTime=str2num(get(handles.edit_postTime,'String'));
@@ -529,6 +566,48 @@ function pushbutton10_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+%get start time;
+startTime=str2num(get(handles.edit_startTime,'String'));
+preTime=str2num(get(handles.edit_preTime,'String')); 
+postTime=str2num(get(handles.edit_postTime,'String'));
+value_flag=[1 1 1];
+if isempty(startTime)
+    value_flag(1)=0;
+end
+%get pre time;
+if isempty(preTime)
+    value_flag(2)=0;
+end
+%get post time
+   
+if isempty(postTime)
+    value_flag(3)=0;
+end
+if sum(value_flag)<3
+    for tmp=1:5
+    if value_flag(1)==0;
+        set(handles.edit_startTime,'BackgroundColor',[1 0 0]);
+    end
+    if value_flag(2)==0;
+        set(handles.edit_preTime,'BackgroundColor',[1 0 0]);
+    end
+    if value_flag(3)==0;
+        set(handles.edit_postTime,'BackgroundColor',[1 0 0]);
+    end
+    pause(0.1);
+     if value_flag(1)==0;
+        set(handles.edit_startTime,'BackgroundColor',[1 1 1]);
+    end
+    if value_flag(2)==0;
+        set(handles.edit_preTime,'BackgroundColor',[1 1 1]);
+    end
+    if value_flag(3)==0;
+        set(handles.edit_postTime,'BackgroundColor',[1 1 1]);
+    end
+    pause(0.1);
+    end
+    return;
+end
 
 global DISPLAY_DATA;
 output_directory=get(handles.father_handles.output_directory,'String');
@@ -547,6 +626,22 @@ if isempty(raw_sublist)
      set(handles.father_handles.raw_sublist,'Value',0);
  else
      set(handles.father_handles.raw_sublist,'Value',1);
+     selectValue=raw_sublist{1};
+     input=get(handles.father_handles.input_directory,'String');
+     DISPLAY_DATA=importdata(fullfile(input,selectValue));
+     axes_std=handles.father_handles.axesDisplaySTD;
+     axes(axes_std);
+     cla;
+     axes_corr=handles.father_handles.axes_CorrMatrix;
+     axes(axes_corr);
+     cla;
+     axes_snr=handles.father_handles.axes_opticalSNR;
+     axes(axes_snr);
+     cla;
+     axes_std=handles.father_handles.axesstdSDG;
+     axes(axes_std);
+     cla;
+     fc_NIRS_plotstdSDG(hObject, eventdata, handles.father_handles);
 end
 if isempty(select_sublist)
     set(handles.father_handles.select_sublist,'Value',0);
@@ -561,7 +656,7 @@ set(handles.father_handles.select_sublist,'String',select_sublist);
 %delete the figure , destroying the data; recover the father window
 figure1_DeleteFcn(hObject, eventdata, handles);
 %close the current figure;
-close(gcf);
+close(handles.figure1);
 
 % --- Executes during object deletion, before destroying properties.
 function figure1_DeleteFcn(hObject, eventdata, handles)

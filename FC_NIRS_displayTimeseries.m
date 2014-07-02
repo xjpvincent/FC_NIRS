@@ -57,10 +57,14 @@ function FC_NIRS_displayTimeseries_OpeningFcn(hObject, eventdata, handles, varar
 %clear the command window
 clc;
 handles.output = hObject;
-if length(varargin)>0
+handles.clearflag=0;
+if length(varargin)==1;
     set(handles.input_directory,'String',varargin{1});
+elseif  length(varargin)==2;
+    set(handles.input_directory,'String',varargin{1});
+    handles.clearflag=varargin{2};
 else
-    set(handles.input_directory,'String',cd);
+    set(handles.input_directory,'String',pwd);
 end
 
 %set global variable;
@@ -528,13 +532,14 @@ function figure1_DeleteFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if (handles.clearflag==0)
 clear global SIGNAL_TYPE1;
 clear global SIGNAL_TYPE2;
 clear global SIGNAL_TYPE3;
 clear global SIGNAL_TYPE4;
 clear global DISPLAY_STATE;
 clear global DISPLAY_DATA;
-
+end
 %is exist rawdata;
 function [r]=israwdata(var_name)
 r=0;

@@ -13,7 +13,7 @@ global DISPLAY_DATA;
 global DISPLAY_STATE;
 %clear gca;
 if isempty(DISPLAY_DATA)
-    axes(handles.axesSDG)
+    axes(handles.axesstdSDG)
     cla;
     return;
 end

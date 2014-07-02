@@ -22,7 +22,7 @@ function varargout = FC_NIRS_qualityControl(varargin)
 
 % Edit the above text to modify the response to help FC_NIRS_qualityControl
 
-% Last Modified by GUIDE v2.5 01-Jul-2014 17:50:01
+% Last Modified by GUIDE v2.5 02-Jul-2014 00:01:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -52,6 +52,7 @@ function FC_NIRS_qualityControl_OpeningFcn(hObject, eventdata, handles, varargin
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to FC_NIRS_qualityControl (see VARARGIN)
 
+set(hObject,'Position',[346.6 27.6 169.6 53.6]);
 % Choose default command line output for FC_NIRS_qualityControl
 global DISPLAY_STATE;
 global DISPLAY_DATA;
@@ -68,23 +69,23 @@ DISPLAY_STATE.wl=2;
 DISPLAY_STATE.stdEvthresh1=3;
 DISPLAY_STATE.stdEvthresh2=3;
 DISPLAY_STATE.plotType=0;
-DISPLAY_STATE.color=[0 0 1; 
-             0 1 0;
-             1 0 0;
-             1 .5 0;
-             1 0 1;
-             0 1 1;
-             0.5 0.5 1;
-             0.5 1 0.5;
-             1 0.5 0.5;
-             1 0.5 1;
-             0.5 1 1;
-             0 0 0;
-             0.2 0.2 0.2;
-             0.4 0.4 0.4;
-             0.6 0.6 0.6;
-             0.8 0.8 0.8];
-         
+DISPLAY_STATE.color=[0 0 1;
+    0 1 0;
+    1 0 0;
+    1 .5 0;
+    1 0 1;
+    0 1 1;
+    0.5 0.5 1;
+    0.5 1 0.5;
+    1 0.5 0.5;
+    1 0.5 1;
+    0.5 1 1;
+    0 0 0;
+    0.2 0.2 0.2;
+    0.4 0.4 0.4;
+    0.6 0.6 0.6;
+    0.8 0.8 0.8];
+
 SIGNAL_TYPE1={'proc OD'};
 SIGNAL_TYPE2={'raw Data';'proc OD';'raw Conc';'proc Conc'};
 SIGNAL_TYPE3={'Wavelength1';'Wavelength2'};
@@ -99,9 +100,34 @@ for i=1:length(nirsfile)
 end
 set(handles.raw_sublist,'String',nirslist);
 if ~isempty(nirslist)
-     DISPLAY_DATA=importdata(fullfile(pwd,'\',nirslist{1}));
-     fc_NIRS_plotSDG(hObject, eventdata, handles);
-     fc_NIRS_plotData(hObject, eventdata, handles);
+    DISPLAY_DATA=importdata(fullfile(pwd,'\',nirslist{1}));
+    %set the popbuttion;
+    var_name=fieldnames(DISPLAY_DATA);
+    if israwdata(var_name)
+        showsignal(1)=1;
+    else
+        showsignal(1)=0;
+    end
+    if isprocOD(var_name)
+        showsignal(2)=1;
+    else
+        showsignal(2)=0;
+    end
+    if israwConc(var_name)
+        showsignal(3)=1;
+    else
+        showsignal(3)=0;
+    end
+    if isprocConc(var_name)
+        showsignal(4)=1;
+    else
+        showsignal(4)=0;
+    end
+    %SIGNAL_TYPE2
+    signal_type=SIGNAL_TYPE2(find(showsignal==1));
+    set(handles.signal_type1,'String',signal_type);
+    fc_NIRS_plotstdSDG(hObject, eventdata, handles);
+    fc_NIRS_displaySTD(hObject, eventdata, handles);
 end
 handles.output = hObject;
 
@@ -141,10 +167,10 @@ set(handles.radio_hbt,'Value',0);
 sublist=get(handles.raw_sublist,'String');
 if strcmp(class(sublist),'char')
     if strcmp(sublist,'None')
-    msgbox('You haven''t select the subject. Please select a subject you want to display.'...
-        ,'Warning','error');
-    return 
-    end   
+        msgbox('You haven''t select the subject. Please select a subject you want to display.'...
+            ,'Warning','error');
+        return
+    end
 end
 if isempty(sublist)
     return;
@@ -155,7 +181,34 @@ input=get(handles.input_directory,'String');
 x=importdata(fullfile(input,selectValue));
 global DISPLAY_DATA;
 DISPLAY_DATA=x;
+%set the popbuttion;
+var_name=fieldnames(DISPLAY_DATA);
+if israwdata(var_name)
+    showsignal(1)=1;
+else
+    showsignal(1)=0;
+end
+if isprocOD(var_name)
+    showsignal(2)=1;
+else
+    showsignal(2)=0;
+end
+if israwConc(var_name)
+    showsignal(3)=1;
+else
+    showsignal(3)=0;
+end
+if isprocConc(var_name)
+    showsignal(4)=1;
+else
+    showsignal(4)=0;
+end
+%SIGNAL_TYPE2
+global SIGNAL_TYPE2;
+signal_type=SIGNAL_TYPE2(find(showsignal==1));
+set(handles.signal_type1,'String',signal_type);
 end_time1=DISPLAY_DATA.rawdata.t(end);
+
 set(handles.end_time1,'String',num2str(end_time1));
 end_time2=DISPLAY_DATA.procConc.t(end);
 set(handles.end_time2,'String',num2str(end_time2));
@@ -189,92 +242,6 @@ function select_sublist_Callback(hObject, eventdata, handles)
 
 %clear the axes;
 %clear the axes;
-axesDisplaySTD=handles.axesDisplaySTD;
-
-axesDisplayTailorData1=handles.axesDisplayTailorData1;
-axesDisplayTailorData2=handles.axesDisplayTailorData2;
-axes_CorrMatrix=handles.axes_CorrMatrix;
-axes_opticalSNR=handles.axes_opticalSNR;
-axesSDG=handles.axesSDG;
-axes(axesDisplaySTD);
-cla;
-
-axes(axesDisplayTailorData1);
-cla;
-axes(axesDisplayTailorData2);
-cla;
-axes(axes_CorrMatrix);
-cla;
-axes(axes_opticalSNR);
-cla;
-axes(axesSDG);
-cla;
-%clear axes done;
-
-global SIGNAL_TYPE2;
-set(handles.raw_sublist,'Enable','off');
-
-set(handles.motionartifact_togglebutton1,'Value',0);
-position1=get(handles.pannel_MotionArtifact,'Position');
-position2=get(handles.pannel_tailorData,'Position');
-position=[position1(1)  position1(2)+abs(position1(4)-position2(4))/2 position2(3:4)];
-set(handles.pannel_SNR,'Visible','off');
-set(handles.pannel_tailorData,'Position',position1);
-set(handles.pannel_MotionArtifact,'Visible','off');
-set(handles.pannel_tailorData,'Visible','on');
-
-set(handles.radio_hbr,'Value',0);
-set(handles.radio_hbt,'Value',0);
-
-sublist=get(handles.select_sublist,'String');
-if strcmp(class(sublist),'char')
-    if strcmp(sublist,'None')
-    msgbox('You haven''t select the subject. Please select a subject you want to display.'...
-        ,'Warning','error');
-    return 
-    end   
-end
-if ~strcmp(class(sublist),'cell')
-    return;
-end
-try
-selectValue=sublist{get(handles.select_sublist,'Value')};
-catch
-    return;
-end
-output_directory=get(handles.output_directory,'String');
-x=importdata(fullfile(output_directory,selectValue));
-global DISPLAY_DATA;
-DISPLAY_DATA=x;
-%set the popbuttion;
-var_name=fieldnames(DISPLAY_DATA);
-if israwdata(var_name)
-    showsignal(1)=1;
-else
-    showsignal(1)=0;
-end
-if isprocOD(var_name)
-     showsignal(2)=1;
-else
-    showsignal(2)=0;
-end
-if israwConc(var_name)
-     showsignal(3)=1;
-else
-    showsignal(3)=0;
-end
-if isprocConc(var_name)
-     showsignal(4)=1;
-else
-    showsignal(4)=0;
-end
-%SIGNAL_TYPE2
-signal_type=SIGNAL_TYPE2(find(showsignal==1));
-set(handles.signal_type1,'String',signal_type);
-
-fc_NIRS_plotSDG(hObject, eventdata, handles);
-fc_NIRS_plotData(hObject, eventdata, handles);
-
 % Hints: contents = cellstr(get(hObject,'String')) returns select_sublist contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from select_sublist
 
@@ -305,8 +272,8 @@ if ~get(hObject,'Value')
 end
 
 if get(hObject,'Value')
-set(handles.radio_hbr,'Value',0);
-set(handles.radio_hbt,'Value',0);
+    set(handles.radio_hbr,'Value',0);
+    set(handles.radio_hbt,'Value',0);
 end
 fc_nirs_displayFCMAP(hObject, eventdata, handles);
 
@@ -328,8 +295,8 @@ if ~get(hObject,'Value')
     return;
 end
 if get(hObject,'Value')
-set(handles.radio_hbo,'Value',0);
-set(handles.radio_hbt,'Value',0);
+    set(handles.radio_hbo,'Value',0);
+    set(handles.radio_hbt,'Value',0);
 end
 fc_nirs_displayFCMAP(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of radio_hbo
@@ -349,8 +316,8 @@ if ~get(hObject,'Value')
 end
 
 if get(hObject,'Value')
-set(handles.radio_hbo,'Value',0);
-set(handles.radio_hbr,'Value',0);
+    set(handles.radio_hbo,'Value',0);
+    set(handles.radio_hbr,'Value',0);
 end
 fc_nirs_displayFCMAP(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of radio_hbt
@@ -400,17 +367,17 @@ if ~isempty(select_sublist)
     select_sublist(selectValue')=[];
     if isempty(select_sublist)
         set(handles.select_sublist,'Value',0);
-    else 
+    else
         set(handles.select_sublist,'Value',1);
     end
-     if isempty(raw_sublist)
+    if isempty(raw_sublist)
         set(handles.raw_sublist,'Value',0);
-    else 
+    else
         set(handles.raw_sublist,'Value',1);
     end
     set(handles.select_sublist,'String',select_sublist);
     set(handles.raw_sublist,'String',raw_sublist);
-
+    
 end
 
 
@@ -425,9 +392,9 @@ if ~get(hObject,'Value')
     return;
 end
 if get(hObject,'Value')
-set(handles.radiobutton_HbR,'Value',0);
-set(handles.radiobutton_HbT,'Value',0);
-set(handles.radiobutton_OD,'Value',0);
+    set(handles.radiobutton_HbR,'Value',0);
+    set(handles.radiobutton_HbT,'Value',0);
+    set(handles.radiobutton_OD,'Value',0);
 end
 % Hint: get(hObject,'Value') returns toggle state of radiobutton_HbO
 
@@ -539,12 +506,12 @@ function raw2select_Callback(hObject, eventdata, handles)
 %         selected_subject=rawlist{1};
 %         tmplist='None';
 %     end
-%     
+%
 % end
 % %
 % set(handles.raw_sublist,'Value',1);
 % set(handles.raw_sublist,'String',tmplist);
-% 
+%
 
 %add the selected subject to the selected list;
 % selectlist=get(handles.raw_sublist,'String');
@@ -575,7 +542,7 @@ function raw2select_Callback(hObject, eventdata, handles)
 %     %CAL_LIST=[CAL_LIST;methodlist(selectValue')];
 %     %copy the file
 %     input=get(handles.input_directory,'String');
-%     output=get(handles.output_directory,'String');  
+%     output=get(handles.output_directory,'String');
 %     sublist=get(handles.select_sublist,'String');
 %     output_directory=fullfile(output);
 %    if ~(exist(output_directory,'dir')==7)
@@ -587,17 +554,17 @@ function raw2select_Callback(hObject, eventdata, handles)
 %     raw_sublist(selectValue')=[];
 %     if isempty(raw_sublist)
 %         set(handles.raw_sublist,'Value',0);
-%     else 
+%     else
 %         set(handles.raw_sublist,'Value',1);
 %     end
 %      if isempty(select_sublist)
 %         set(handles.select_sublist,'Value',0);
-%     else 
+%     else
 %         set(handles.select_sublist,'Value',1);
 %     end
 %     set(handles.raw_sublist,'String',raw_sublist);
 %     set(handles.select_sublist,'String',select_sublist);
-% 
+%
 % end
 % %call the TailorData window;
 selectlist=get(handles.raw_sublist,'String');
@@ -692,9 +659,10 @@ function choose_directory_Callback(hObject, eventdata, handles)
 select_inputDirectory(hObject, eventdata, handles);
 fc_NIRS_plotstdSDG(hObject, eventdata, handles);
 fc_NIRS_displaySTD(hObject, eventdata, handles);
-    
+
 function select_inputDirectory(hObject, eventdata, handles)
-pathnm = uigetdir(cd, 'Pick the new directory' );
+input_directory=get(handles.input_directory,'String');
+pathnm = uigetdir(input_directory, 'Pick the new directory' );
 if pathnm==0
     return;
 end
@@ -713,14 +681,40 @@ end
 set(handles.raw_sublist,'String',datalist);
 input=get(handles.input_directory,'String');
 if ~isempty(datalist)
-x=importdata(fullfile(input,datalist{1,1}));
-global DISPLAY_DATA;
-DISPLAY_DATA=x;
+    x=importdata(fullfile(input,datalist{1,1}));
+    global DISPLAY_DATA;
+    DISPLAY_DATA=x;
 end
 end_time1=DISPLAY_DATA.rawdata.t(end);
 set(handles.end_time1,'String',num2str(end_time1));
 end_time2=DISPLAY_DATA.procConc.t(end);
 set(handles.end_time2,'String',num2str(end_time2));
+%set the popbuttion;
+var_name=fieldnames(DISPLAY_DATA);
+if israwdata(var_name)
+    showsignal(1)=1;
+else
+    showsignal(1)=0;
+end
+if isprocOD(var_name)
+    showsignal(2)=1;
+else
+    showsignal(2)=0;
+end
+if israwConc(var_name)
+    showsignal(3)=1;
+else
+    showsignal(3)=0;
+end
+if isprocConc(var_name)
+    showsignal(4)=1;
+else
+    showsignal(4)=0;
+end
+%SIGNAL_TYPE2
+global SIGNAL_TYPE2;
+signal_type=SIGNAL_TYPE2(find(showsignal==1));
+set(handles.signal_type1,'String',signal_type);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -765,13 +759,13 @@ global DISPLAY_STATE;
 if get(hObject,'Value')
     set(handles.conc_type,'Enable','off');
     set(handles.conc_type,'Value',1);
- %   set(handles.radio_OD,'Enable','off');
+    %   set(handles.radio_OD,'Enable','off');
     set(handles.wavelength,'Enable','on');
     set(handles.wavelength,'Value',1);
     set(handles.radio_Conc,'Value',0);
     DISPLAY_STATE.signal_type1=1;
     DISPLAY_STATE.signal_type2=1;
-   fc_nirs_displaySTD(hObject, eventdata, handles);
+    fc_nirs_displaySTD(hObject, eventdata, handles);
 else
     set(hObject,'Value',1);
 end
@@ -808,7 +802,7 @@ function conc_type_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global DISPLAY_STATE;
- DISPLAY_STATE.signal_type2=get(hObject,'Value');
+DISPLAY_STATE.signal_type2=get(hObject,'Value');
 fc_nirs_displaySTD(hObject, eventdata, handles);
 fc_nirs_displayDVARS(hObject, eventdata, handles);
 %displayDVARS(hObject, eventdata, handles);
@@ -887,7 +881,7 @@ function windowlength_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global DISPLAY_STATE;
 
-DISPLAY_STATE.wl=str2num(get(hObject,'Value'));
+DISPLAY_STATE.wl=str2num(get(hObject,'String'));
 fc_nirs_displaySTD(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of windowlength as text
 %        str2double(get(hObject,'String')) returns contents of windowlength as a double
@@ -935,7 +929,7 @@ function stdEvthresh1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global DISPLAY_STATE;
-DISPLAY_STATE.stdEvthresh1=str2num(get(hObject,'Value'));
+DISPLAY_STATE.stdEvthresh1=str2num(get(hObject,'String'));
 fc_nirs_displaySTD(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of stdEvthresh1 as text
 %        str2double(get(hObject,'String')) returns contents of stdEvthresh1 as a double
@@ -971,9 +965,9 @@ if ~get(hObject,'Value')
     return;
 end
 if get(hObject,'Value')
-set(handles.radiobutton21,'Value',0);
+    set(handles.radiobutton21,'Value',0);
 end
- fc_nirs_displaySNR(hObject, eventdata, handles);
+fc_nirs_displaySNR(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of radiobutton20
 %plot([0:50],ones(1,51)*(m_opticalSNR+500));
 
@@ -1040,7 +1034,7 @@ set(hObject,'Value',1);
 set(handles.SNR_togglebutton2,'Value',0);
 set(handles.pannel_SNR,'Visible','off');
 set(handles.pannel_MotionArtifact,'Visible','on');
-set(handles.pannel_tailorData,'Visible','off');
+% set(handles.pannel_tailorData,'Visible','off');
 %set DISPLA£ß£Ä£Á£Ô£Á
 sublist=get(handles.raw_sublist,'String');
 %if there is no sublist ,then return do nothing;
@@ -1052,10 +1046,10 @@ if isempty(sublist)
 end
 if strcmp(class(sublist),'char')
     if strcmp(sublist,'None')
-    msgbox('You haven''t select the subject. Please select a subject you want to display.'...
-        ,'Warning','error');
-    return 
-    end   
+        msgbox('You haven''t select the subject. Please select a subject you want to display.'...
+            ,'Warning','error');
+        return
+    end
 end
 selectValue=sublist{get(handles.raw_sublist,'Value')};
 input=get(handles.input_directory,'String');
@@ -1081,7 +1075,6 @@ position=[position1(1)  position1(2)+abs(position1(4)-position2(4))/2 position2(
 set(handles.pannel_SNR,'Visible','on');
 set(handles.pannel_SNR,'Position',position1);
 set(handles.pannel_MotionArtifact,'Visible','off');
-set(handles.pannel_tailorData,'Visible','off');
 
 
 %set DISPLAY_DATA
@@ -1089,10 +1082,10 @@ set(handles.pannel_tailorData,'Visible','off');
 sublist=get(handles.raw_sublist,'String');
 if strcmp(class(sublist),'char')
     if strcmp(sublist,'None')
-    msgbox('You haven''t select the subject. Please select a subject you want to display.'...
-        ,'Warning','error');
-    return 
-    end   
+        msgbox('You haven''t select the subject. Please select a subject you want to display.'...
+            ,'Warning','error');
+        return
+    end
 end
 %if selected no value or the selected sublist is empty return;
 if get(handles.raw_sublist,'Value')<1
@@ -1101,7 +1094,7 @@ end
 if isempty(sublist)
     return;
 end
- selectValue=sublist{get(handles.raw_sublist,'Value')};
+selectValue=sublist{get(handles.raw_sublist,'Value')};
 input=get(handles.input_directory,'String');
 x=importdata(fullfile(input,selectValue));
 global DISPLAY_DATA;
@@ -1124,7 +1117,7 @@ function pushbutton7_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 input_directory=get(handles.input_directory,'String');
-FC_NIRS_displayTimeseries(input_directory);
+FC_NIRS_displayTimeseries(input_directory,1);
 
 % --- Executes on button press in choose_outdirectory.
 function choose_outdirectory_Callback(hObject, eventdata, handles)
@@ -1361,8 +1354,8 @@ else
     set(handles.signal_type2,'String',SIGNAL_TYPE3);
     set(handles.signal_type2,'Value',1);
 end
-fc_NIRS_plotData(hObject, eventdata, handles);
-        
+fc_nirs_displaySTD(hObject, eventdata, handles);
+
 
 % Hints: contents = cellstr(get(hObject,'String')) returns signal_type1 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from signal_type1
@@ -1390,7 +1383,7 @@ global DISPLAY_STATE;
 val=get(hObject,'Value');
 DISPLAY_STATE.signal_type2=val;
 %display the Data
-fc_NIRS_plotData(hObject, eventdata, handles);
+fc_nirs_displaySTD(hObject, eventdata, handles);
 % Hints: contents = cellstr(get(hObject,'String')) returns signal_type2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from signal_type2
 
@@ -1507,7 +1500,7 @@ for k=1:size(data_fieldnames,1)
             t=t(tindex)-t(tindex(1));
             dod=dod(tindex,:);
             DISPLAY_DATA.procOD.t=t;
-            DISPLAY_DATA.procOD.dod=dod;           
+            DISPLAY_DATA.procOD.dod=dod;
         case 'rawConc'
             t=DISPLAY_DATA.rawConc.t;
             HbO=DISPLAY_DATA.rawConc.HbO;
@@ -1536,7 +1529,7 @@ for k=1:size(data_fieldnames,1)
             DISPLAY_DATA.procConc.HbO=HbO;
             DISPLAY_DATA.procConc.HbR=HbR;
             DISPLAY_DATA.procConc.HbT=HbT;
-     end
+    end
 end
 set(handles.edit_startTime,'String','0');
 set(handles.edit_preTime,'String','0');
@@ -1625,7 +1618,6 @@ global DISPLAY_STATE;
 if get(hObject,'Value')
     set(handles.radiobutton25,'Value',0);
     DISPLAY_STATE.plotType=0;
-    fc_NIRS_plotData(hObject, eventdata, handles);
 else
     set(hObject,'Value',1);
     DISPLAY_STATE.ployType=0;
@@ -1643,7 +1635,6 @@ global DISPLAY_STATE;
 if get(hObject,'Value')
     set(handles.radiobutton24,'Value',0);
     DISPLAY_STATE.plotType=1;
-    fc_NIRS_plotData(hObject, eventdata, handles);
 else
     set(hObject,'Value',1);
     DISPLAY_STATE.ployType=1;
@@ -1675,19 +1666,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu7.
+% --- Executes on selection change in signal_type2.
 function popupmenu7_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu7 (see GCBO)
+% hObject    handle to signal_type2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 fc_nirs_displaySTD(hObject, eventdata, handles);
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu7 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu7
+% Hints: contents = cellstr(get(hObject,'String')) returns signal_type2 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from signal_type2
 
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu7_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu7 (see GCBO)
+% hObject    handle to signal_type2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1698,19 +1689,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu6.
+% --- Executes on selection change in signal_type1.
 function popupmenu6_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu6 (see GCBO)
+% hObject    handle to signal_type1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 fc_nirs_displaySTD(hObject, eventdata, handles);
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu6 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu6
+% Hints: contents = cellstr(get(hObject,'String')) returns signal_type1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from signal_type1
 
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu6_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu6 (see GCBO)
+% hObject    handle to signal_type1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
