@@ -38,7 +38,7 @@ line_color=[0 0 1;
 
 %handles=guihandles(GUI_DATA.handles);
 axesSDG=handles.axesstdSDG;
-axis(axesSDG, [SD.xmin SD.xmax SD.ymin SD.ymax]);
+%axis(axesSDG, [SD.xmin SD.xmax SD.ymin SD.ymax]);
 axis(axesSDG, 'image')
 set(axesSDG,'xticklabel','')
 set(axesSDG,'yticklabel','')
@@ -48,6 +48,7 @@ lst=find(SD.MeasList(:,1)>0);
 ml=SD.MeasList(lst,:);
 lstML = find(ml(:,4)==1); 
 lst2 = find(SD.MeasListAct(lstML)==0);
+
 for ii=1:length(lst2)
     h = line( [SD.SrcPos(ml(lstML(lst2(ii)),1),1) SD.DetPos(ml(lstML(lst2(ii)),2),1)], ...
         [SD.SrcPos(ml(lstML(lst2(ii)),1),2) SD.DetPos(ml(lstML(lst2(ii)),2),2)] );

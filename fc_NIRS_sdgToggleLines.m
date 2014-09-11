@@ -28,17 +28,17 @@ lst=find(SD.MeasList(:,1)==DISPLAY_STATE.plot(idx,1) &...
 % of prune channel and visibility status
 if strcmp(mouseevent,'alt')
     if strcmp(get(h2(idx),'linestyle'), '-')
-        set(h2(idx),'linestyle',':')
+        set(h2(idx),'linestyle','--')
         SD.MeasListVis(lst)=0;
     elseif strcmp(get(h2(idx),'linestyle'), '--')
-        set(h2(idx),'linestyle','-.')
-        SD.MeasListVis(lst)=0;
-    elseif strcmp(get(h2(idx),'linestyle'), ':')
         set(h2(idx),'linestyle','-')
         SD.MeasListVis(lst)=1;
-    elseif strcmp(get(h2(idx),'linestyle'), '-.')
-        set(h2(idx),'linestyle','--')
-        SD.MeasListVis(lst)=1;
+%     elseif strcmp(get(h2(idx),'linestyle'), ':')
+%         set(h2(idx),'linestyle','-')
+%         SD.MeasListVis(lst)=1;
+%     elseif strcmp(get(h2(idx),'linestyle'), '-.')
+%         set(h2(idx),'linestyle','--')
+%         SD.MeasListVis(lst)=1;
     end
     
 %%%% If mouse nromal left click, prune channel data 
@@ -47,14 +47,14 @@ elseif strcmp(mouseevent,'normal')
         set(h2(idx),'linestyle','--')
         SD.MeasListAct(lst)=0;
     elseif strcmp(get(h2(idx),'linestyle'), '--')
-        set(h2(idx),'linestyle','-.')
-        SD.MeasListAct(lst)=1;
-    elseif strcmp(get(h2(idx),'linestyle'), ':')
         set(h2(idx),'linestyle','-')
-        SD.MeasListAct(lst)=0;
-    elseif strcmp(get(h2(idx),'linestyle'), '-.')
-        set(h2(idx),'linestyle','--')
         SD.MeasListAct(lst)=1;
+%     elseif strcmp(get(h2(idx),'linestyle'), ':')
+%         set(h2(idx),'linestyle','-')
+%         SD.MeasListAct(lst)=0;
+%     elseif strcmp(get(h2(idx),'linestyle'), '-.')
+%         set(h2(idx),'linestyle','--')
+%         SD.MeasListAct(lst)=1;
     end
     
 %%%% Exit function for any other mouse event 

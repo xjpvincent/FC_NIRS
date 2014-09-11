@@ -22,7 +22,7 @@ function varargout = FC_NIRS_fcAnalysis(varargin)
 
 % Edit the above text to modify the response to help FC_NIRS_fcAnalysis
 
-% Last Modified by GUIDE v2.5 22-Jun-2014 00:04:59
+% Last Modified by GUIDE v2.5 14-Jul-2014 00:02:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -53,29 +53,33 @@ function FC_NIRS_fcAnalysis_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to FC_NIRS_fcAnalysis (see VARARGIN)
 
 % Choose default command line output for FC_NIRS_fcAnalysis
-global SIGNAL_TYPE;
-global FC_METHOLD;
-global STATISTIC;
-global CORR_TYPE;
-SIGNAL_TYPE=zeros(3,1);
-FC_METHOLD=zeros(2,1);
-STATISTIC=zeros(4,1);
-CORR_TYPE=zeros(2,1);
+global ANALYSIS_PARA;
+ANALYSIS_PARA.signal_type=zeros(3,1);
+ANALYSIS_PARA.corr_type{1}.name='Pearson';
+ANALYSIS_PARA.corr_type{1}.func='fc_pearson';
+ANALYSIS_PARA.corr_type{2}.name='Cross';
+ANALYSIS_PARA.corr_type{2}.func='fc_cross';
+ANALYSIS_PARA.corr_type{3}.name='Spearman';
+ANALYSIS_PARA.corr_type{3}.func='fc_spearman';
+ANALYSIS_PARA.corr_choose=1;
+ANALYSIS_PARA.fc_method='seed-based';
+ANALYSIS_PARA.statistic=zeros(4,1);
+ANALYSIS_PARA.seed=[];
 
 handles.output = hObject;
-set(handles.directory_place,'String',cd);
-nirsfile=dir(fullfile(cd,'\*.proc'));
+set(handles.input_directory,'String',cd);
+nirsfile=dir(fullfile(pwd,filesep,'*.proc'));
 nirslist=cell(1,length(nirsfile));
 if size(nirsfile,1)
 for i=1:size(nirsfile,1)
     nirslist{i}=nirsfile(i).name(1:end-12);
 end
-set(handles.list_sublist,'String',nirslist);
+set(handles.sublist,'String',nirslist);
 tmp=importdata(cd,'',nirsfile(1).name);
 handles.SD=tmp.SD;
 end
 %set default directory
-set(handles.out_directory,'String',fullfile(cd,'\','fc_Result'));
+set(handles.output_directory,'String',fullfile(cd,'\','fc_Result'));
 % Update handles structure
 guidata(hObject, handles);
 
@@ -177,12 +181,12 @@ function pushbutton5_Callback(hObject, eventdata, handles)
 
 
 
-
-pathnm = uigetdir(cd, 'Pick the new directory' );
+input_directory=get(handles.input_directory,'String');
+pathnm = uigetdir(input_directory, 'Pick the new directory' );
 if pathnm==0
     return;
 end
-set(handles.directory_place,'String',pathnm);
+set(handles.input_directory,'String',pathnm);
 %set work path
 %check whether exist FileFold 'RawData';
 if  size(dir(fullfile(pathnm,'*.proc')))<1
@@ -202,7 +206,7 @@ if size(nirsfile,1)
 for i=1:size(nirsfile,1)
     nirslist{i}=nirsfile(i).name;
 end
-set(handles.list_sublist,'String',nirslist);
+set(handles.sublist,'String',nirslist);
 end
  %%set SD
  tmp=importdata(fullfile(pathnm,nirsfile(1).name));
@@ -212,19 +216,19 @@ end
 
 % Update handles structure
 guidata(hObject, handles);
-% --- Executes on selection change in list_sublist.
-function list_sublist_Callback(hObject, eventdata, handles)
-% hObject    handle to list_sublist (see GCBO)
+% --- Executes on selection change in sublist.
+function sublist_Callback(hObject, eventdata, handles)
+% hObject    handle to sublist (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns list_sublist contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from list_sublist
+% Hints: contents = cellstr(get(hObject,'String')) returns sublist contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from sublist
 
 
 % --- Executes during object creation, after setting all properties.
-function list_sublist_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to list_sublist (see GCBO)
+function sublist_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sublist (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -236,18 +240,18 @@ end
 
 
 
-function directory_place_Callback(hObject, eventdata, handles)
-% hObject    handle to directory_place (see GCBO)
+function input_directory_Callback(hObject, eventdata, handles)
+% hObject    handle to input_directory (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of directory_place as text
-%        str2double(get(hObject,'String')) returns contents of directory_place as a double
+% Hints: get(hObject,'String') returns contents of input_directory as text
+%        str2double(get(hObject,'String')) returns contents of input_directory as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function directory_place_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to directory_place (see GCBO)
+function input_directory_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to input_directory (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -265,8 +269,12 @@ function Buttion_Seedbased_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(hObject,'Value',1);
 set(handles.Buttion_wholebrain,'Value',0);
-set(handles.channel_info,'Visible','on');
+set(handles.seed_info,'Visible','on');
 set(handles.seed_text,'Visible','on');
+global ANALYSIS_PARA;
+ANALYSIS_PARA.fc_method='seed-based';
+set(handles.button_viewResult1,'Enable','off');
+set(handles.button_viewResult2,'Enable','off');
 % Hint: get(hObject,'Value') returns toggle state of Buttion_Seedbased
 
 
@@ -277,9 +285,12 @@ function Buttion_wholebrain_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(hObject,'Value',1);
 set(handles.Buttion_Seedbased,'Value',0);
-set(handles.channel_info,'Visible','off');
+set(handles.seed_info,'Visible','off');
 set(handles.seed_text,'Visible','off');
-
+global ANALYSIS_PARA;
+ANALYSIS_PARA.fc_method='whole-brain';
+set(handles.button_viewResult1,'Enable','off');
+set(handles.button_viewResult2,'Enable','off');
 % Hint: get(hObject,'Value') returns toggle state of Buttion_wholebrain
 
 
@@ -409,7 +420,13 @@ function checkbox_HbR_Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_HbR (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.checkbox_All,'Value',0);
+global ANALYSIS_PARA;
+if get(hObject,'Value')
+    set(handles.checkbox_All,'Value',0);
+    ANALYSIS_PARA.signal_type(2)=1;
+else
+    ANALYSIS_PARA.signal_type(2)=0;
+end
 % Hint: get(hObject,'Value') returns toggle state of checkbox_HbR
 
 
@@ -418,8 +435,13 @@ function checkbox_HbO_Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_HbO (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.checkbox_All,'Value',0);
-
+global ANALYSIS_PARA;
+if get(hObject,'Value')
+    set(handles.checkbox_All,'Value',0);
+    ANALYSIS_PARA.signal_type(1)=1;
+else
+    ANALYSIS_PARA.signal_type(1)=0;
+end
 % Hint: get(hObject,'Value') returns toggle state of checkbox_HbO
 
 
@@ -428,7 +450,13 @@ function checkbox_HbT_Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_HbT (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.checkbox_All,'Value',0);
+global ANALYSIS_PARA;
+if get(hObject,'Value')
+    set(handles.checkbox_All,'Value',0);
+    ANALYSIS_PARA.signal_type(3)=1;
+else
+    ANALYSIS_PARA.signal_type(3)=0;
+end
 % Hint: get(hObject,'Value') returns toggle state of checkbox_HbT
 
 
@@ -437,14 +465,17 @@ function checkbox_All_Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_All (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global ANALYSIS_PARA;
 if get(hObject,'Value')
     set(handles.checkbox_HbO,'Value',1);
     set(handles.checkbox_HbR,'Value',1);
     set(handles.checkbox_HbT,'Value',1);
+    ANALYSIS_PARA.signal_type=ones(3,1);
 else
     set(handles.checkbox_HbO,'Value',0);
     set(handles.checkbox_HbR,'Value',0);
     set(handles.checkbox_HbT,'Value',0);
+    ANALYSIS_PARA.signal_type=zeros(3,1);
 end
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_All
@@ -477,18 +508,31 @@ end
 
 
 
-function channel_info_Callback(hObject, eventdata, handles)
-% hObject    handle to channel_info (see GCBO)
+function seed_info_Callback(hObject, eventdata, handles)
+% hObject    handle to seed_info (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of channel_info as text
-%        str2double(get(hObject,'String')) returns contents of channel_info as a double
+global ANALYSIS_PARA;
+ANALYSIS_PARA.seed=str2num(get(handles.seed_info,'String'));
+if isempty(ANALYSIS_PARA.seed)
+    for tmp=1:5
+        set(handles.seed_info,'BackgroundColor',[1 0 0]);
+        pause(0.1);
+        set(handles.seed_info,'BackgroundColor',[1 1 1]);
+        pause(0.1);
+    end
+    set(handles.seed_info,'BackgroundColor',[1 0 0]);
+else
+    set(handles.seed_info,'BackgroundColor',[1 1 1]);
+end
+% if isempty
+% Hints: get(hObject,'String') returns contents of seed_info as text
+%        str2double(get(hObject,'String')) returns contents of seed_info as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function channel_info_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to channel_info (see GCBO)
+function seed_info_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to seed_info (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -506,6 +550,7 @@ function individual_analysis_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 %set(hObject,'Enable','off');
+set(handles.button_viewResult1,'Enable','off');
 run_individual_analysis(hObject, eventdata, handles);
 set(hObject,'Enable','on');
 set(handles.button_viewResult1,'Enable','on');
@@ -521,13 +566,16 @@ end
 if get(handles.Buttion_wholebrain,'Value')
     fc_type='wholebrain';
 end
+if isempty(get(handles.sublist,'String'))
+    return;
+end
 
-fc_analsysis_viewResult1(get(handles.out_directory,'String'),...
-    get(handles.list_sublist,'String'),...
+fc_analsysis_viewResult1(get(handles.output_directory,'String'),...
+    get(handles.sublist,'String'),...
    fc_type,handles.SD);
 
 % --- Executes on button press in pushbutton13.
-function pushbutton13_Callback(hObject, eventdata, handles)
+function pushbutton13_Callback(~, eventdata, handles)
 % hObject    handle to pushbutton13 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -545,6 +593,8 @@ function checkbox_R_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
  set(handles.checkbox_AllStatistic,'Value',0);
+global ANALYSIS_PARA;
+ANALYSIS_PARA.statistic(1)=get(hObject,'Value');
 % Hint: get(hObject,'Value') returns toggle state of checkbox_R
 
 
@@ -554,6 +604,8 @@ function checkbox_T_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
  set(handles.checkbox_AllStatistic,'Value',0);
+ global ANALYSIS_PARA;
+ANALYSIS_PARA.statistic(4)=get(hObject,'Value');
 % Hint: get(hObject,'Value') returns toggle state of checkbox_T
 
 
@@ -563,6 +615,8 @@ function checkbox_Z_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
  set(handles.checkbox_AllStatistic,'Value',0);
+  global ANALYSIS_PARA;
+ANALYSIS_PARA.statistic(2)=get(hObject,'Value');
 % Hint: get(hObject,'Value') returns toggle state of checkbox_Z
 
 
@@ -572,6 +626,8 @@ function checkbox_Z2R_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
  set(handles.checkbox_AllStatistic,'Value',0);
+   global ANALYSIS_PARA;
+ANALYSIS_PARA.statistic(3)=get(hObject,'Value');
 % Hint: get(hObject,'Value') returns toggle state of checkbox_Z2R
 
 
@@ -580,16 +636,19 @@ function checkbox_AllStatistic_Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_AllStatistic (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+    global ANALYSIS_PARA;
 if get(hObject,'Value')
     set(handles.checkbox_R,'Value',1);
     set(handles.checkbox_Z,'Value',1);
     set(handles.checkbox_Z2R,'Value',1);
     set(handles.checkbox_T,'Value',1);
+     ANALYSIS_PARA.statistic=ones(4,1);
 else
     set(handles.checkbox_R,'Value',0);
     set(handles.checkbox_Z,'Value',0);
     set(handles.checkbox_Z2R,'Value',0);
     set(handles.checkbox_T,'Value',0);
+     ANALYSIS_PARA.statistic=zeros(4,1);
 end
 % Hint: get(hObject,'Value') returns toggle state of checkbox_AllStatistic
 
@@ -599,13 +658,17 @@ function pushbutton15_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton15 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(hObject,'Value',0);
-run_group_analysis(hObject, eventdata, handles);
-set(hObject,'Value',1);
 
-% --- Executes on button press in pushbutton16.
-function pushbutton16_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton16 (see GCBO)
+
+%set(hObject,'Enable','off');
+set(handles.button_viewResult2,'Enable','off');
+set(hObject,'Enable','off');
+run_group_analysis(hObject, eventdata, handles);
+set(hObject,'Enable','on');
+set(handles.button_viewResult2,'Enable','on');
+% --- Executes on button press in button_viewResult2.
+function button_viewResult2_Callback(hObject, eventdata, handles)
+% hObject    handle to button_viewResult2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if get(handles.Buttion_Seedbased,'Value')
@@ -615,11 +678,14 @@ if get(handles.Buttion_wholebrain,'Value')
     fc_type='whole';
 end
 global SIGNAL_TYPE;
+global ANALYSIS_PARA;
 %signal_type=SIGNAL_TYPE;
+statistic=ANALYSIS_PARA.statistic;
+output_directory=get(handles.output_directory,'String');
 signal_type=[1 1 1]';
-fc_analsysis_viewResult2(get(handles.directory_place,'String'),...
+fc_analsysis_viewResult2(output_directory,...
     signal_type,...
-   fc_type,handles.SD);
+   fc_type,handles.SD,statistic);
 
 
 % --- Executes on button press in pushbutton17.
@@ -631,22 +697,22 @@ pathnm = uigetdir(cd, 'Pick the new directory' );
 if pathnm==0
     return;
 end
-set(handles.out_directory,'String',pathnm)
+set(handles.output_directory,'String',pathnm)
 
 
 
-function out_directory_Callback(hObject, eventdata, handles)
-% hObject    handle to out_directory (see GCBO)
+function output_directory_Callback(hObject, eventdata, handles)
+% hObject    handle to output_directory (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of out_directory as text
-%        str2double(get(hObject,'String')) returns contents of out_directory as a double
+% Hints: get(hObject,'String') returns contents of output_directory as text
+%        str2double(get(hObject,'String')) returns contents of output_directory as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function out_directory_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to out_directory (see GCBO)
+function output_directory_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to output_directory (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -672,3 +738,27 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 
 % Hint: delete(hObject) closes the figure
 delete(hObject);
+
+
+% --- Executes on selection change in listbox3.
+function listbox3_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global ANALYSIS_PARA;
+ANALYSIS_PARA.corr_choose=get(hObject,'Value');;
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox3 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox3
+
+
+% --- Executes during object creation, after setting all properties.
+function listbox3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listbox3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

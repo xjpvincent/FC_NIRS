@@ -86,6 +86,9 @@ if DISPLAY_STATE.plotType==0
                 DISPLAY_DATA.SD.MeasList(lst3,2)==DISPLAY_DATA.SD.MeasList(lst(ii),2) );
         end
         plotLst = lst2;
+        if ~isfield(DISPLAY_DATA.SD,'MeasListAct')
+            DISPLAY_DATA.SD.MeasListAct=ones(size(DISPLAY_DATA.SD.MeasList,1));
+        end
         lst = find(DISPLAY_DATA.SD.MeasListAct(plotLst)==1);
     end
     %detect error

@@ -7,9 +7,6 @@ var_name=fieldnames(inputdata);
 %     if isempty(strfind(var_name{nidx},'nomalizedOD')
 %        %have no nomalizedOD; 
 %     end
-%     
-%     
-%     
 % end
 outdata=inputdata;
 SD=inputdata.SD;

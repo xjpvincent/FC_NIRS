@@ -51,93 +51,17 @@
 % TO DO:
 % Consider tIncMan
 
-function [tInc,tIncCh] = hmrMotionArtifactByChannel(d, fs, SD, tIncMan, tMotion, tMask, std_thresh, amp_thresh)
-
+function [tInc,tIncCh] = hmrMotionArtifactByChannel(signal, t,  tIncMan, tMotion, tMask, std_thresh, amp_thresh)
+for i=1:size(signal,2)
+    std_sig(:,i)=movingstd(signal(:,i),round(tMotion/abs(t(1)-t(2))),'central');
+    m_std=mean(std_sig(:,i));
+    s_std=std(std_sig(:,i));
+    std_sig(:,i)=std_sig(:,i)>(m_std+std_thresh*s_std);
+end
+t1=t(tMotion/(2*abs(t(1)-t(2))):end-tMotion/(2*abs(t(1)-t(2))));
+% tIncCh=std_sig(tMotion/(2*abs(t(1)-t(2))):end-tMotion/(2*abs(t(1)-t(2))),:);
+onetmp=ones(size(std_sig));
+tIncCh=onetmp(find(std_sig==0));
+tInc=0;
+% h=imagesc(t1,1:size(signal,2),std_sig1');
 % Input processing.  Check required inputs, throw errors if necessary.
-if nargin<3
-    error('Must use inputs d, fs, SD.  See help MC for details.')
-end
-
-if ~isnumeric(d)
-    error('Must use matrix input d.  See help MC for details.')
-end
-
-if ~isnumeric(fs)
-    error('Must use numeric input fs for sampling frequency.  See help MC for details.')
-end
-
-if length(fs)~=1 && length(fs)~=size(d,1)
-    error('fs must either be sample frequency or a time vector with same length as d')
-end
-if length(fs)~=1
-    fs = 1/(fs(2)-fs(1));
-end
-
-if isempty(tIncMan)
-    tIncMan = ones(size(d,1),1);
-end
-
-tInc = ones(size(d,1),1);
-tIncCh = ones(size(d,1),size(SD.MeasList,1));
-
-% Calculate the diff of d to to set the threshold if ncssesary
-diff_d=diff(d);
-
-
-
-% set artifact buffer for tMask seconds on each side of spike
-art_buffer=round(tMask*fs); % time in seconds times sample rate
-
-lstAct = find(SD.MeasListAct==1);
-
-% LOOP OVER CHANNELS
-for iCh = 1:length(lstAct)
-    
-    % calculate std_diff for each channel
-    std_diff=std(d(2:end,lstAct(iCh))-d(1:end-1,lstAct(iCh)),0,1);
-    
-    % calculate max_diff across channels for different time delays
-    max_diff = zeros(size(d,1)-1,1);
-    for ii=1:round(tMotion*fs)
-        max_diff=max([abs(d((ii+1):end,lstAct(iCh))-d(1:(end-ii),lstAct(iCh))); zeros(ii-1,1)], max_diff);
-    end
-    
-    % find indices with motion artifacts based on std_thresh or amp_thresh
-    bad_inds = [];
-    mc_thresh=std_diff*std_thresh;
-    bad_inds = find( max(max_diff > mc_thresh ,[],2)==1 | ...
-        max_diff > amp_thresh  );
-    
-    % Eliminate time points before or after motion artifacts
-    if ~isempty(bad_inds)
-        bad_inds=repmat(bad_inds, 1, 2*art_buffer+1)+repmat(-art_buffer:art_buffer,length(bad_inds), 1);
-        bad_inds=bad_inds((bad_inds>0)&(bad_inds<=(size(d, 1)-1)));
-        
-        % exclude points that were manually excluded
-        bad_inds(find(tIncMan(bad_inds)==0)) = [];
-        
-        % Set t and diff of data to 0 at the bad inds
-        tInc(1+bad_inds)=0; % bad inds calculated on diff so add 1
-        tIncCh(1+bad_inds,lstAct(iCh)) = 0;
-    end
-    
-end % loop over channels
-
-
-% calculate the variance due to motion relative to total variance
-lst = find(tInc==0);
-dstd0 = std(d(lst,:),[],1);
-lst = find(tInc==1);
-dstd1 = std(d(lst,:),[],1);
-
-end
-
-
-
-
-
-% Function to find the sd pair with the largest spikes
-function sd_pair=find_sd(diff_d)
-[max_diff, max_ind]=max(max(diff_d));
-sd_pair=max_ind;
-end

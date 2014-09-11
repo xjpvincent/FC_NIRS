@@ -27,7 +27,8 @@
 % TO DO:
 %
 
-function dodSpline = hmrMotionCorrectSpline(dod, t, SD, tInc, p)
+
+function dodSpline = hmrMotionCorrectSpline(dod, t,  tInc, p)
 
 % if p outside its authorized range, set to 0.99
 if p>1 || p<0
@@ -42,10 +43,12 @@ fs = 1/mean(t(2:end)-t(1:end-1));
 dtShort = 0.3;  % seconds
 dtLong  = 3;    % seconds
 
-ml = SD.MeasList;
-mlAct = SD.MeasListAct; % prune bad channels
+% ml = SD.MeasList;
+% mlAct = SD.MeasListAct; % prune bad channels
 
-lstAct = find(mlAct==1);
+% lstAct = find(mlAct==1);
+%modefied
+lstAct=1:size(dod,2);
 dodSpline = dod;
 
 for ii = 1:length(lstAct)
@@ -81,14 +84,14 @@ for ii = 1:length(lstAct)
         nbMA = length(lstMl);   % number of MA segments
         
         % Do the spline interpolation on each MA segment
-        % only include channels in the active meas list
+        % only include channels in the active meas listv
         
         for jj = 1:nbMA
             lst = lstMs(jj):(lstMf(jj)-1);
             % spline interp
             SplInterp = csaps(t(lst)', dod(lst,idx_ch)', p, t(lst)')';
             % corrected signal = original signal - spline interpolation
-            dodSpline(lst,idx_ch) = dod(lst,idx_ch) - SplInterp;
+            dodSpline(lst,idx_ch) = dod(lst,idx_ch) - SplInterp';
         end
         
         

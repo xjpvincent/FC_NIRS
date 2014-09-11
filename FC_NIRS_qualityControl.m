@@ -22,7 +22,7 @@ function varargout = FC_NIRS_qualityControl(varargin)
 
 % Edit the above text to modify the response to help FC_NIRS_qualityControl
 
-% Last Modified by GUIDE v2.5 02-Jul-2014 00:01:35
+% Last Modified by GUIDE v2.5 11-Jul-2014 09:59:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -353,18 +353,25 @@ function select2raw_Callback(hObject, eventdata, handles)
 % cla;
 %%%
 select_sublist=get(handles.select_sublist,'String');
+
 if ~isempty(select_sublist)
     selectValue=get(handles.select_sublist,'Value');
     raw_sublist=get(handles.raw_sublist,'String');
-    raw_sublist=[raw_sublist;select_sublist(selectValue')];
+    if isempty(raw_sublist)
+        raw_sublist=select_sublist(selectValue');    
+    else
+        raw_sublist=[raw_sublist;select_sublist(selectValue')];
+    end
     outpath=get(handles.output_directory,'String');
     %delete the selected file
-    delete_file=fullfile(outpath,select_sublist{selectValue'});
+    delete_file=fullfile(outpath,filesep,select_sublist{selectValue'});
     delete(delete_file);
     global DIPSPLAY_DATA;
     DISPLAY_DATA=[];
     %CAL_LIST=[CAL_LIST;methodlist(selectValue')];
     select_sublist(selectValue')=[];
+    set(handles.select_sublist,'String',select_sublist);
+    set(handles.raw_sublist,'String',raw_sublist);
     if isempty(select_sublist)
         set(handles.select_sublist,'Value',0);
     else
@@ -375,9 +382,9 @@ if ~isempty(select_sublist)
     else
         set(handles.raw_sublist,'Value',1);
     end
-    set(handles.select_sublist,'String',select_sublist);
-    set(handles.raw_sublist,'String',raw_sublist);
     
+else
+    return;
 end
 
 
@@ -675,13 +682,15 @@ if size(nirsfilelist,1)>0
     for fileidx=1:size(nirsfilelist,1)
         datalist{fileidx,1}=nirsfilelist(fileidx).name;
     end
+else 
+    return;
 end
 %set the input datalist.
 %set(handles.
 set(handles.raw_sublist,'String',datalist);
 input=get(handles.input_directory,'String');
 if ~isempty(datalist)
-    x=importdata(fullfile(input,datalist{1,1}));
+    x=importdata(fullfile(input,filesep,datalist{1,1}));
     global DISPLAY_DATA;
     DISPLAY_DATA=x;
 end
@@ -1075,6 +1084,8 @@ position=[position1(1)  position1(2)+abs(position1(4)-position2(4))/2 position2(
 set(handles.pannel_SNR,'Visible','on');
 set(handles.pannel_SNR,'Position',position1);
 set(handles.pannel_MotionArtifact,'Visible','off');
+fc_nirs_displayFCMAP(hObject, eventdata, handles);
+fc_nirs_displaySNR(hObject, eventdata, handles);
 
 
 %set DISPLAY_DATA
@@ -1328,16 +1339,8 @@ global DISPLAY_STATE;
 sig=get(hObject,'String');
 val=get(hObject,'Value');
 sig_selected=sig{val};
-%var_name=sig(val);
-% if strcmp(sig_selected)
-%     DISPLAY_STATE.signal_type1=1;
-% elseif isprocOD(var_name)
-%     DISPLAY_STATE.signal_type1=2;
-% elseif israwConc(var_name)
-%      DISPLAY_STATE.signal_type1=3;
-% elseif isprocConc(var_name)
-%      DISPLAY_STATE.signal_type1=4;
-% end
+
+
 for index=1:size(SIGNAL_TYPE2,1)
     if strcmp(sig_selected,SIGNAL_TYPE2{index,1})
     DISPLAY_STATE.signal_type1=index;
@@ -1749,6 +1752,7 @@ function axesstdSDG_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to axesstdSDG (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 fc_NIRS_AxesstdSDG_buttondown(hObject, eventdata, handles);
 
 
@@ -1781,6 +1785,7 @@ function start_time2_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 fc_nirs_displayFCMAP(hObject, eventdata, handles);
+fc_nirs_displaySNR(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of start_time2 as text
 %        str2double(get(hObject,'String')) returns contents of start_time2 as a double
 
@@ -1804,6 +1809,7 @@ function end_time2_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 fc_nirs_displayFCMAP(hObject, eventdata, handles);
+fc_nirs_displaySNR(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of end_time2 as text
 %        str2double(get(hObject,'String')) returns contents of end_time2 as a double
 
@@ -1833,3 +1839,33 @@ if isempty(selectlist)
 end
 parent_handles=handles;
 FC_NIRS_qcTailorAllData(parent_handles);
+
+
+% --- Executes on slider movement.
+function slider2_Callback(hObject, eventdata, handles)
+% hObject    handle to slider2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% display(get(hObject,'Value'));
+cmin=get(hObject,'Value');
+mapaxes=handles.axes_CorrMatrix;
+axes(mapaxes);
+caxis([cmin 1]);
+colorbar;
+
+
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+
+
+% --- Executes during object creation, after setting all properties.
+function slider2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to slider2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end

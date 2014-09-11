@@ -89,19 +89,24 @@ PARA_LIST{5,1}=struct('name','PCA_filter',...
     'para','[0]',...
     'para_info','component(s):',...
      'func','fc_nirs_PCAfilter');
- para.STDEVthresh='5';
+ para.STDEVthresh='3';
  para.AMPthresh='0.01';
  para.tMotion='1';
  para.tMask='1';
- para.p='0.9';
+ para.p='0.01';
    
 PARA_LIST{6,1}=struct('name','MotionCorrect_Spline',...
     'discription','The the time range to analysis ',...
     'para',para,...
     'para_info','stdEther:',...
      'func','fc_nirs_MotionCorrect_Spline');
+PARA_LIST{7,1}=struct('name','MotionCorrect_CBSI',...
+    'discription','The the time range to analysis ',...
+    'para','no para',...
+    'para_info','no para',...
+     'func','fc_nirs_MotionCorrect_CBSI');
      
-PARA_LIST{7,1}=struct('name','Intensity2OD',...
+PARA_LIST{8,1}=struct('name','Intensity2OD',...
     'discription','Log transformed to changes in optical density ',...
     'para','no para',...
     'para_info','no para',...
@@ -845,8 +850,8 @@ if pathnm==0
 end
 set(handles.input_directory,'String',pathnm)
 %probe the existing file.
-nirsfilelist=dir(strcat(pathnm,'\','*.nirs'));
-%procfilelist=dir(strcat(pathnm,'\','*.proc'));
+nirsfilelist=dir(fullfile(strcat(pathnm,filesep,'*.nirs')));
+%procfilelist=dir(strcat(pathnm,'*.proc'));
 datalist=[];
 if size(nirsfilelist,1)>0
     for fileidx=1:size(nirsfilelist,1)
@@ -958,9 +963,14 @@ function ConfigListbox_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global PARA_LIST; 
+try
 calList=get(handles.CalListbox,'String');
 selectValue=get(handles.CalListbox,'Value');
 selected_method=calList{selectValue,1};
+catch
+    return
+end
+
 if ~isempty(strfind(selected_method,'MotionCorrect_Spline'))
     clickValue=get(hObject,'Value');
     para=PARA_LIST{6,1}.para;
@@ -975,7 +985,7 @@ if ~isempty(strfind(selected_method,'MotionCorrect_Spline'))
             end
             inputpara=inputpara{1};
             if ~isempty(inputpara)
-                para.STDEvthresh=inputpara;
+                para.STDEVthresh=inputpara;
             end
         case 3
             inputpara=inputdlg({'AMPthresh'},'parameters',1,{para.AMPthresh});
@@ -984,7 +994,7 @@ if ~isempty(strfind(selected_method,'MotionCorrect_Spline'))
             end
             inputpara=inputpara{1};
             if ~isempty(inputpara)
-                para.Ampthresh=inputpara;
+                para.AMPthresh=inputpara;
             end
         case 4
             inputpara=inputdlg({'tMotion'},'parameters',1,{para.tMotion});
@@ -1002,7 +1012,7 @@ if ~isempty(strfind(selected_method,'MotionCorrect_Spline'))
             end
             inputpara=inputpara{1};
             if ~isempty(inputpara)
-                para.tMark=inputpara;
+                para.tMask=inputpara;
             end
         case 6
             inputpara=inputdlg({'p'},'parameters',1,{para.p});
@@ -1018,7 +1028,8 @@ if ~isempty(strfind(selected_method,'MotionCorrect_Spline'))
     
     tmp{1,1}='MotionCorrect_Spline';
     tmp{2,1}=strcat('STDEVthresh:-->',num2str(para.STDEVthresh));
-    tmp{3,1}=strcat('AMPthresh:--->',num2str(para.AMPthresh));
+%    tmp{3,1}=strcat('AMPthresh:--->',num2str(para.AMPthresh));
+    tmp{3,1}=strcat('.');
     tmp{4,1}=strcat('tMotion:-->',num2str(para.tMotion));
     tmp{5,1}=strcat('tMask:-->',num2str(para.tMask));
     tmp{6,1}=strcat('p:-->',num2str(para.p));
@@ -1036,7 +1047,7 @@ end
 clickValue=get(hObject,'Value');
 
 if clickValue==3
-
+    callist=get(handles.CalListbox,'String');
     selectValue=get(handles.CalListbox,'Value');
     for j=1:size(PARA_LIST,1)
     if ~isempty(strfind(PARA_LIST{j,1}.name,callist{selectValue,1}))
@@ -1289,11 +1300,12 @@ if ~isempty(strfind(selected_method,'MotionCorrect_Spline'))
     para=PARA_LIST{6,1}.para;    
     tmp{1,1}='MotionCorrect_Spline';
     tmp{2,1}=strcat('STDEVthresh:-->',num2str(para.STDEVthresh));
-    tmp{3,1}=strcat('Ampthresh:--->',num2str(para.AMPthresh));
+  %  tmp{3,1}=strcat('Ampthresh:--->',num2str(para.AMPthresh));
+    tmp{3,1}=strcat('');
     tmp{4,1}=strcat('tMotion:-->',num2str(para.tMotion));
     tmp{5,1}=strcat('tMask:-->',num2str(para.tMask));
     tmp{6,1}=strcat('p:-->',num2str(para.p));
-    tmp{7,1}='down';
+  %  tmp{7,1}='down';
     set(handles.ConfigListbox,'String',tmp);
     set(handles.ConfigListbox,'Value',1);
     return;

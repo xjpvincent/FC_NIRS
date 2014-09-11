@@ -22,7 +22,7 @@ function varargout = fc_analsysis_viewResult1(varargin)
 
 % Edit the above text to modify the response to help fc_analsysis_viewResult1
 
-% Last Modified by GUIDE v2.5 21-May-2014 22:57:59
+% Last Modified by GUIDE v2.5 13-Jul-2014 15:58:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -63,18 +63,19 @@ handles.data_path=varargin{1};
 handles.sublist=varargin{2};
 handles.fc_type=varargin{3};
 handles.SD=varargin{4};
-global SIGNAL_TYPE;
-if SIGNAL_TYPE(1)==1
+global ANALYSIS_PARA;
+signal_type=ANALYSIS_PARA.signal_type;
+if signal_type(1)==1
     set(handles.checkbox_HbO,'Enable','on');
 else
       %  set(handles.checkbox_HbO,'Enable','off');
 end
-if SIGNAL_TYPE(2)==1
+if signal_type(2)==1
     set(handles.checkbox_HbR,'Enable','on');
 else
         set(handles.checkbox_HbR,'Enable','off');
 end
-if SIGNAL_TYPE(3)==1
+if signal_type(3)==1
     set(handles.checkbox_HbT,'Enable','on');
 else
     set(handles.checkbox_HbT,'Enable','off');
@@ -164,4 +165,26 @@ function subjects_list_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on slider movement.
+function slider1_Callback(hObject, eventdata, handles)
+% hObject    handle to slider1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+
+
+% --- Executes during object creation, after setting all properties.
+function slider1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to slider1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
 end

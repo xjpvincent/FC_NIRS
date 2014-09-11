@@ -1,0 +1,1 @@
+function [tInc]=xjp_MotionArtifactByChannel

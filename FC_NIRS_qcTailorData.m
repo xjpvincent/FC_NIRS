@@ -22,7 +22,7 @@ function varargout = FC_NIRS_qcTailorData(varargin)
 
 % Edit the above text to modify the response to help FC_NIRS_qcTailorData
 
-% Last Modified by GUIDE v2.5 01-Jul-2014 17:32:45
+% Last Modified by GUIDE v2.5 03-Sep-2014 18:06:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -609,7 +609,59 @@ if sum(value_flag)<3
     return;
 end
 
+startTime=str2num(get(handles.edit_startTime,'String'));
+preTime=str2num(get(handles.edit_preTime,'String'));
+postTime=str2num(get(handles.edit_postTime,'String'));
 global DISPLAY_DATA;
+data_fieldnames=fieldnames(DISPLAY_DATA);
+for k=1:size(data_fieldnames,1)
+    switch data_fieldnames{k,1}
+        case 'Rawdata'
+            t=DISPLAY_DATA.rawdata.t;
+            d=DISPLAY_DATA.rawdata.d;
+            tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
+            t=t(tindex)-t(tindex(1));
+            d=d(tindex,:);
+            DISPLAY_DATA.rawdata.t=t;
+            DISPLAY_DATA.rawedata.d=d;
+        case 'procOD'
+            t=DISPLAY_DATA.procOD.t;
+            dod=DISPLAY_DATA.procOD.dod;
+            tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
+            t=t(tindex)-t(tindex(1));
+            dod=dod(tindex,:);
+            DISPLAY_DATA.procOD.t=t;
+            DISPLAY_DATA.procOD.dod=dod;           
+        case 'rawConc'
+            t=DISPLAY_DATA.rawConc.t;
+            HbO=DISPLAY_DATA.rawConc.HbO;
+            HbR=DISPLAY_DATA.rawConc.HbR;
+            HbT=DISPLAY_DATA.rawConc.HbT;
+            tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
+            t=t(tindex)-t(tindex(1));
+            HbO=HbO(tindex,:);
+            HbR=HbR(tindex,:);
+            HbT=HbT(tindex,:);
+            DISPLAY_DATA.rawConc.t=t;
+            DISPLAY_DATA.rawConc.HbO=HbO;
+            DISPLAY_DATA.rawConc.HbR=HbR;
+            DISPLAY_DATA.rawConc.HbT=HbT;
+        case 'procConc'
+            t=DISPLAY_DATA.procConc.t;
+            HbO=DISPLAY_DATA.procConc.HbO;
+            HbR=DISPLAY_DATA.procConc.HbR;
+            HbT=DISPLAY_DATA.procConc.HbT;
+            tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
+            t=t(tindex)-t(tindex(1));
+            HbO=HbO(tindex,:);
+            HbR=HbR(tindex,:);
+            HbT=HbT(tindex,:);
+            DISPLAY_DATA.procConc.t=t;
+            DISPLAY_DATA.procConc.HbO=HbO;
+            DISPLAY_DATA.procConc.HbR=HbR;
+            DISPLAY_DATA.procConc.HbT=HbT;
+     end
+end
 output_directory=get(handles.father_handles.output_directory,'String');
 raw_sublist=get(handles.father_handles.raw_sublist,'String');
 selectValue=get(handles.father_handles.raw_sublist,'Value');
@@ -617,8 +669,24 @@ if isempty(raw_sublist)
     return;
 end
 selectName=raw_sublist{selectValue};
+if ~(exist(output_directory,'dir')==7)
+    mkdir(fullfile(output_directory));
+end
+% exact corresponding signal Type;
+
+saveData.SD=DISPLAY_DATA.SD;
+if get(handles.checkbox_RawData,'Value')
+    saveData.RawData=DISPLAY_DATA.RawData;
+end
+if get(handles.checkbox_OD,'Value')
+    saveData.OD=DISPLAY_DATA.OD;
+end
+if get(handles.checkbox_Conc,'Value')
+    saveData.Conc=DISPLAY_DATA.Conc;
+end
+
 savepath=fullfile(output_directory,selectName);
-save(savepath,'DISPLAY_DATA');
+save(savepath,'saveData');
 select_sublist=get(handles.father_handles.select_sublist,'String');
 select_sublist=[select_sublist;raw_sublist(selectValue')];
 raw_sublist(selectValue')=[];
@@ -647,6 +715,16 @@ if isempty(select_sublist)
     set(handles.father_handles.select_sublist,'Value',0);
 else
     set(handles.father_handles.select_sublist,'Value',1);
+        
+end
+if isempty(raw_sublist)
+    set(handles.father_handles.raw_sublist,'Value',0);
+    DISPLAY_DATA=[];
+else
+    set(handles.father_handles.raw_sublist,'Value',1);
+    input_directory=get(handles.father_handles.input_directory,'String');
+    DISPLAY_DATA=importdata(fullfile(input_directory,...
+        filesep,raw_sublist{1}));
 end
 if ~(exist(output_directory,'dir')==7)
     mkdir(fullfile(output_directory));
@@ -758,3 +836,62 @@ function axestailorSDG_ButtonDownFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 fc_NIRS_AxestailorSDG_buttondown(hObject, eventdata, handles)
+
+
+% --- Executes on button press in checkbox1.
+function checkbox1_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox1
+
+
+% --- Executes on button press in checkbox_RawData.
+function checkbox_RawData_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_RawData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_RawData
+
+
+% --- Executes on button press in checkbox_OD.
+function checkbox_OD_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_OD (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_OD
+
+
+% --- Executes on button press in checkbox_Conc.
+function checkbox_Conc_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_Conc (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_Conc
+
+
+
+function edit16_Callback(hObject, eventdata, handles)
+% hObject    handle to edit16 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit16 as text
+%        str2double(get(hObject,'String')) returns contents of edit16 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit16_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit16 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

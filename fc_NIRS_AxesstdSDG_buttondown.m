@@ -4,7 +4,10 @@ function fc_NIRS_AxesstdSDG_buttondown(hObject, eventdata, handles)
 global DISPLAY_DATA;
 global DISPLAY_STATE;
 %handles=guihandles(GUI_DATA.handles);
-if isempty(DISPLAY_DATA.SD) 
+if isempty(DISPLAY_DATA)
+    return;
+end
+if isfield(DISPLAY_DATA,'SD')
     return;
 end
 

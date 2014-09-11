@@ -26,4 +26,7 @@ c=corr(DISPLAY_DATA.procConc.HbT(tindex,:));
 imagesc(c);
 % else
 end
+title('Signal Correlation','FontSize',14);
+xlabel('channel');
+ylabel('channel');
 colorbar;

@@ -234,7 +234,7 @@ for i=1:size(sublist,1)
                 t=t(tindex)-t(tindex(1));
                 d=d(tindex,:);
                 copy_data.rawdata.t=t;
-                copy_data.rawedata.d=d;
+                copy_data.rawdata.d=d;
             case 'procOD'
                 t=copy_data.procOD.t;
                 dod=copy_data.procOD.dod;
@@ -274,7 +274,7 @@ for i=1:size(sublist,1)
         end
         
     end
-    savepath=fullfile(input_directory,sublist{i});
+    savepath=fullfile(output_directory,filesep,sublist{i});
     save(savepath,'copy_data');
     waitbar(i/size(sublist,1),h,strcat(sublist{i},' is finished'));
 end

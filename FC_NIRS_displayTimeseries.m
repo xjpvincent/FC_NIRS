@@ -140,10 +140,10 @@ end
 if ~isempty(datalist)
     set(handles.display_datalist,'String',datalist);
     if ~isempty(strfind(datalist{1},'.proc'))
-        DISPLAY_DATA=importdata(fullfile(pathnm,'\',datalist{1}));
+        DISPLAY_DATA=importdata(fullfile(pathnm,filesep,datalist{1}));
     end
     if ~isempty(strfind(datalist{1},'.nirs'))
-        DISPLAY_DATA.rawdata=importdata(fullfile(pathnm,'\',datalist{1}));
+        DISPLAY_DATA.rawdata=importdata(fullfile(pathnm,filesep,datalist{1}));
         DISPLAY_DATA.SD=DISPLAY_DATA.rawdata.SD;
     end
 else 
@@ -151,7 +151,7 @@ else
      set(handles.signal_type1,'Value',1);
     set(handles.signal_type2,'Value',1);
     set(handles.display_datalist,'Value',1);
-    set(handles.display_datalist,'String',{'None'});
+    set(handles.display_datalist,'String',[]);
     set(handles.signal_type1,'String',SIGNAL_TYPE1);
     set(handles.signal_type2,'String',SIGNAL_TYPE3);
     set(handles.signal_type1,'Enable','off');
@@ -353,21 +353,35 @@ global SIGNAL_TYPE1;
 global SIGNAL_TYPE2;
 global SIGNAL_TYPE3;
 global SIGNAL_TYPE4;
+global DISPLAY_DATA;
 
-
-pathnm = uigetdir(cd, 'Pick the new directory' );
+input_directory=get(handles.input_directory,'String');
+pathnm = uigetdir(input_directory, 'Pick the new directory' );
 if pathnm==0
     return;
 end
 set(handles.input_directory,'String',pathnm);
 
 %probe the existing file.
-nirsfilelist=dir(fullfile(pathnm,'\','*.nirs'));
-procfilelist=dir(fullfile(pathnm,'\','*.proc'));
+nirsfilelist=dir(fullfile(pathnm,filesep,'*.nirs'));
+procfilelist=dir(fullfile(pathnm,filesep,'*.proc'));
 datalist=[];
 if size(nirsfilelist,1)>0
     if size(procfilelist,1)>0
-        msgbox('The selected input directory has both nirs and proc format file.','warn'); 
+    %if no file
+    for tmp=1:5
+    set(handles.display_datalist,'BackgroundColor',[1 0 0]);
+    pause(0.1);
+    set(handles.display_datalist,'BackgroundColor',[1 1 1]);
+    pause(0.1);
+    end
+    DISPLAY_DATA=[];
+    axes(handles.axesSDG);
+    cla;
+    axes(handles.axesDisplayData);
+    cla;
+    return;
+    %return;
     else
         set(handles.signal_type1,'String',SIGNAL_TYPE1);
         set(handles.signal_type2,'String',SIGNAL_TYPE3);
@@ -403,8 +417,7 @@ if ~isempty(datalist)
     set(handles.display_datalist,'String',datalist);
     DISPLAY_DATA=importdata(strcat(pathnm,'\',datalist{1}));
 else 
-    msgbox('The selected input directory has no nirs or proc data.','warn'); 
-     set(handles.signal_type1,'Value',1);
+    set(handles.signal_type1,'Value',1);
     set(handles.signal_type2,'Value',1);
     set(handles.display_datalist,'Value',1);
     set(handles.display_datalist,'String',{'None'});
@@ -414,8 +427,48 @@ else
     set(handles.signal_type2,'Enable','off');
     set(handles.show_psd,'Enable','off'); 
     DISPLAY_DATA=[];
+    %if no file
+    for tmp=1:5
+        set(handles.display_datalist,'BackgroundColor',[1 0 0]);
+        pause(0.1);
+        set(handles.display_datalist,'BackgroundColor',[1 1 1]);
+        pause(0.1);
+    end
+    DISPLAY_DATA=[];
+    axes(handles.axesSDG);
+    cla;
+    axes(handles.axesDisplayData);
+    cla;
+    return;
+    %return;
 end
-  fc_NIRS_plotSDG(hObject, eventdata, handles);
+if ~isempty(DISPLAY_DATA)
+var_name=fieldnames(DISPLAY_DATA);
+if israwdata(var_name)
+    showsignal(1)=1;
+else
+    showsignal(1)=0;
+end
+if isprocOD(var_name)
+     showsignal(2)=1;
+else
+    showsignal(2)=0;
+end
+if israwConc(var_name)
+     showsignal(3)=1;
+else
+    showsignal(3)=0;
+end
+if isprocConc(var_name)
+     showsignal(4)=1;
+else
+    showsignal(4)=0;
+end
+%SIGNAL_TYPE2
+signal_type=SIGNAL_TYPE2(find(showsignal==1));
+set(handles.signal_type1,'String',signal_type);
+end
+fc_NIRS_plotSDG(hObject, eventdata, handles);
    
 
 

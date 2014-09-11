@@ -59,18 +59,32 @@ function fc_analsysis_viewResult2_OpeningFcn(hObject, eventdata, handles, vararg
 
 % Choose default command line output for fc_analsysis_viewResult2
 handles.output = hObject;
-handles.workplace=varargin{1};
+handles.data_path=varargin{1};
 handles.signal_type=varargin{2};
 handles.fc_type=varargin{3};
 handles.SD=varargin{4};
+handles.statistic=varargin{5};
+statistic=handles.statistic;
 tmp=handles.signal_type;
 tmp=tmp.*[1 2 3]';
 tmp(find(tmp==0))=[];
 signal_str={'HbO','HbR','HbT'};
 set(handles.popupmenu_signalType,'String',signal_str(tmp));
+
 % Update handles structure
 guidata(hObject, handles);
-
+if statistic(1)==1;
+    set(handles.checkbox_R,'Enable','on');
+end
+if statistic(2)==1;
+    set(handles.checkbox_Z,'Enable','on');
+end
+if statistic(3)==1;
+    set(handles.checkbox_Z2R,'Enable','on');
+end
+if statistic(4)==1;
+    set(handles.checkbox_T,'Enable','on');
+end
 % UIWAIT makes fc_analsysis_viewResult2 wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 

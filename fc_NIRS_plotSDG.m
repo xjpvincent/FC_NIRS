@@ -12,6 +12,8 @@ function fc_NIRS_plotSDG(hObject, eventdata, handles)
 global DISPLAY_DATA;
 global DISPLAY_STATE;
 %clear gca;
+axes(handles.axesSDG)
+    cla;
 if isempty(DISPLAY_DATA)
     axes(handles.axesSDG)
     cla;
@@ -38,7 +40,12 @@ line_color=[0 0 1;
 
 %handles=guihandles(GUI_DATA.handles);
 axesSDG=handles.axesSDG;
-axis(axesSDG, [SD.xmin SD.xmax SD.ymin SD.ymax]);
+
+xymin=min([SD.SrcPos ;SD.DetPos]);
+xymax=max([SD.SrcPos ; SD.DetPos]);
+axis(axesSDG, [xymin(1) xymax(1) xymin(2) xymax(2)]);
+
+
 axis(axesSDG, 'image')
 set(axesSDG,'xticklabel','')
 set(axesSDG,'yticklabel','')
@@ -47,6 +54,9 @@ axes(axesSDG);
 lst=find(SD.MeasList(:,1)>0);
 ml=SD.MeasList(lst,:);
 lstML = find(ml(:,4)==1); 
+if ~isfield(SD,'MeasListAct')
+    SD.MeasListAct=ones(size(SD.MeasList,1));
+end
 lst2 = find(SD.MeasListAct(lstML)==0);
 for ii=1:length(lst2)
     h = line( [SD.SrcPos(ml(lstML(lst2(ii)),1),1) SD.DetPos(ml(lstML(lst2(ii)),2),1)], ...
@@ -56,35 +66,32 @@ for ii=1:length(lst2)
     set(h,'ButtonDownFcn',get(axesSDG,'ButtonDownFcn'));
 end
 
-lst2 = find(SD.MeasListAct(lstML)==1);
+lst2 = find(SD.MeasListAct(lstML)>-1);
 for ii=1:length(lst2)
     h = line( [SD.SrcPos(ml(lstML(lst2(ii)),1),1) SD.DetPos(ml(lstML(lst2(ii)),2),1)], ...
         [SD.SrcPos(ml(lstML(lst2(ii)),1),2) SD.DetPos(ml(lstML(lst2(ii)),2),2)] );
+    tmpx=(SD.SrcPos(ml(lstML(lst2(ii)),1),1)+SD.DetPos(ml(lstML(lst2(ii)),2),1))/2;
+    tmpy=(SD.SrcPos(ml(lstML(lst2(ii)),1),2)+SD.DetPos(ml(lstML(lst2(ii)),2),2))/2;
+    text(tmpx,tmpy,num2str(ii),'FontSize',6);
     set(h,'color',[1 1 1]*.85);
     set(h,'linewidth',4);
     set(h,'ButtonDownFcn',get(axesSDG,'ButtonDownFcn'));
 end
 
 % ADD SOURCE AND DETECTOR LABELS
-for idx=1:SD.nSrcs
+for idx=1:size(SD.SrcPos,1);
     if ~isempty(find(SD.MeasList(:,1)==idx))
         h = text( SD.SrcPos(idx,1), SD.SrcPos(idx,2), sprintf('%c', 64+idx), 'fontweight','bold' );
         set(h,'ButtonDownFcn',get(axesSDG,'ButtonDownFcn'));
     end
 end
-for idx=1:SD.nDets
+for idx=1:size(SD.DetPos,1)
     if ~isempty(find(SD.MeasList(:,2)==idx))
         h = text( SD.DetPos(idx,1), SD.DetPos(idx,2), sprintf('%d', idx), 'fontweight','bold' );
         set(h,'ButtonDownFcn',get(axesSDG,'ButtonDownFcn'));
     end
 end
 
-%plot param;
-% DRAW PLOT LINES
-% THESE LINES HAVE TO BE THE LAST
-% ITEMS ADDED TO THE AXES
-% FOR CHANNEL TOGGLING TO WORK WITH
-% plotstate=DISPLAY_DATA.plotstate;
 DISPLAY_STATE=DISPLAY_STATE;
 if isfield( DISPLAY_STATE, 'plot' )
     if ~isempty(DISPLAY_STATE.plot)

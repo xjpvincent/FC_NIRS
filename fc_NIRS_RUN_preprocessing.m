@@ -28,7 +28,10 @@ end
 
  h=waitbar(0,'Please wait...');
  %writing log file;
- fid=fopen(fullfile(output_directory,...
+  if ~(exist(output_directory,'dir')==7)
+        mkdir(fullfile(output_directory));
+   end
+ fid=fopen(fullfile(output_directory,filesep,...
      'processing.log'),'w');
  fprintf(fid,'%s\n',strcat('Data file directory:',input_directory));
  fprintf(fid,'%s\n',strcat('Result file directory:',output_directory)); 
@@ -36,7 +39,7 @@ end
  
 for sub=1:size(display_datalist,1)
    subname=display_datalist{sub,1};
-   datapath=fullfile(strcat(input_directory,'/',subname));
+   datapath=fullfile(strcat(input_directory,filesep,subname));
    procResult=[];
    raw=importdata(datapath);
    procResult.rawdata=raw;
@@ -69,7 +72,7 @@ for sub=1:size(display_datalist,1)
        end
    end
    %
-   outpath=fullfile(strcat(output_directory,'/',subname(1:end-4),'proc'));
+   outpath=fullfile(strcat(output_directory,filesep,subname(1:end-4),'proc'));
    if ~(exist(output_directory,'dir')==7)
         mkdir(fullfile(output_directory));
    end
