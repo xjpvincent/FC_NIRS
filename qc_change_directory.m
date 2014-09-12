@@ -59,10 +59,10 @@ GUI_DATA.plotstate.selectedsubject=nirslist{1};
 % %import data 
 % 
 imported_data = importdata(strcat(pathnm,'\','RawData\',nirslist{1}));
-GUI_DATA.rawdata=imported_data;
-GUI_DATA.rawdata.SD.MeasListVis=GUI_DATA.rawdata.SD.MeasListAct;
+GUI_DATA.RawData=imported_data;
+GUI_DATA.RawData.SD.MeasListVis=GUI_DATA.RawData.SD.MeasListAct;
 GUI_DATA.currentData=imported_data;
-GUI_DATA.currentData.SD.MeasListVis=GUI_DATA.rawdata.SD.MeasListAct;
+GUI_DATA.currentData.SD.MeasListVis=GUI_DATA.RawData.SD.MeasListAct;
 
 %set wavelength
 lambda=GUI_DATA.currentData.SD.Lambda;

@@ -14,19 +14,19 @@ nWav = length(SD.Lambda);
 ml = SD.MeasList;
 if ~isprocOD(var_name)
     %covert od 2 conc
-    dod = Intensity2OD( inputdata.rawdata.d );
-    outdata.procOD.dod=dod;
-    outdata.procOD.t=inputdata.rawdata.t;
+    dod = Intensity2OD( inputdata.RawData.d );
+    outdata.OD.dod=dod;
+    outdata.OD.t=inputdata.RawData.t;
 end
-dc=OD2Conc(outdata.procOD.dod,outdata.SD,ppf);
+dc=OD2Conc(outdata.OD.dod,outdata.SD,ppf);
 HbO=squeeze(dc(:,1,:));
 HbR=squeeze(dc(:,2,:));
 HbT=squeeze(dc(:,3,:));
-procConc.HbO=HbO;
-procConc.HbR=HbR;
-procConc.HbT=HbT;
-procConc.t=outdata.procOD.t;
-outdata.procConc=procConc;
+Conc.HbO=HbO;
+Conc.HbR=HbR;
+Conc.HbT=HbT;
+Conc.t=outdata.OD.t;
+outdata.Conc=Conc;
 
 % dc = hmrOD2Conc( dod, SD, ppf )
 %
@@ -97,19 +97,19 @@ dm = mean(abs(d),1);
 nTpts = size(d,1);
 dod = -log(abs(d)./(ones(nTpts,1)*dm));
 
-%is exist procOD;
+%is exist OD;
 function [r]=isprocOD(var_name)
 r=0;
-x=strfind(var_name,'procOD');
+x=strfind(var_name,'OD');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
     end
 end
-%is exist procConc
+%is exist Conc
 function [r]=isprocConc(var_name)
 r=0;
-x=strfind(var_name,'procConc');
+x=strfind(var_name,'Conc');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;

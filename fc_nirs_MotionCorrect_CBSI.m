@@ -6,17 +6,17 @@ function [ outdata] = fc_nirs_MotionCorrect_CBSI(inputdata,para)
 var_name=fieldnames(inputdata);
 if (isprocConc(var_name))
     outdata=inputdata;
-    outdata.dcCbsi = nirs_MotionCorrectCbsi(outdata.procConc,4);
+    outdata.dcCbsi = nirs_MotionCorrectCbsi(outdata.Conc,4);
 else
     disp('CBSI method must have Conc data£¬ please check the input set');
     
 end
 end
 
-%is exist procConc
+%is exist Conc
 function [r]=isprocConc(var_name)
 r=0;
-x=strfind(var_name,'procConc');
+x=strfind(var_name,'Conc');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
@@ -50,21 +50,21 @@ end
 % created 10-17-2012, S. Brigadoi
 % modify 2014/8/19. J.P Xu
 %
-function dcCbsi = nirs_MotionCorrectCbsi(procConc,flagSkip)
+function dcCbsi = nirs_MotionCorrectCbsi(Conc,flagSkip)
 if ~exist('flagSkip')
     flagSkip = 0;
 end
 if flagSkip==1
-    dcCbsi = procConc;
+    dcCbsi = Conc;
     return;
 end
 %mlAct = SD.MeasListAct; % prune bad channels
-lstAct = 1:size(procConc.HbO,2);
-dcCbsi = procConc;
+lstAct = 1:size(Conc.HbO,2);
+dcCbsi = Conc;
 for ii = 1:length(lstAct)
     idx_ch = lstAct(ii);
-    dc_oxy = procConc.HbO(:,idx_ch)-mean(procConc.HbO(:,idx_ch),1);
-    dc_deoxy = procConc.HbR(:,idx_ch)-mean(procConc.HbR(:,idx_ch),1);
+    dc_oxy = Conc.HbO(:,idx_ch)-mean(Conc.HbO(:,idx_ch),1);
+    dc_deoxy = Conc.HbR(:,idx_ch)-mean(Conc.HbR(:,idx_ch),1);
     sd_oxy = std(dc_oxy,0,1);
     sd_deoxy = std(dc_deoxy,0,1);
     alfa = sd_oxy/sd_deoxy;

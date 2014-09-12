@@ -51,6 +51,7 @@ set(axesSDG,'xticklabel','')
 set(axesSDG,'yticklabel','')
 set(axesSDG,'ygrid','off')
 axes(axesSDG);
+
 lst=find(SD.MeasList(:,1)>0);
 ml=SD.MeasList(lst,:);
 lstML = find(ml(:,4)==1); 

@@ -7,72 +7,72 @@ var_name=fieldnames(inputdata);
 outdata=inputdata;
 if length(tRange<3);
 if ~isprocOD(var_name)
-    rawdata=inputdata.rawdata;
-    t=rawdata.t;
+    RawData=inputdata.RawData;
+    t=RawData.t;
     tindex=(t>tRange(1))&(t<tRange(2));
     tindex=find(tindex==1);
-    outdata.procOD.dod=rawdata.d(tindex,:);
-    outdata.procOD.t=t(tindex)-tRange(1);
-    %outdata.procOD.dod=nirs_detrend(rawdata.d,p);
-    %outdata.procOD.t=rawdata.t;
+    outdata.OD.dod=RawData.d(tindex,:);
+    outdata.OD.t=t(tindex)-tRange(1);
+    %outdata.OD.dod=nirs_detrend(RawData.d,p);
+    %outdata.OD.t=RawData.t;
     return
 elseif ~isprocConc(var_name)
-    t=outdata.procOD.t;
+    t=outdata.OD.t;
     tindex=(t>tRange(1))&(t<tRange(2));
     tindex=find(tindex==1);
-    outdata.procOD.dod=outdata.procOD.dod(tindex,:);
-    outdata.procOD.t=t(tindex)-tRange(1);    
+    outdata.OD.dod=outdata.OD.dod(tindex,:);
+    outdata.OD.t=t(tindex)-tRange(1);    
 else
-    t=outdata.procConc.t;
+    t=outdata.Conc.t;
     tindex=(t>tRange(1))&(t<tRange(2));
     tindex=find(tindex==1);
-    outdata.procConc.HbO=outdata.procConc.HbO(tindex,:);
-    outdata.procConc.HbR=outdata.procConc.HbR(tindex,:);
-    outdata.procConc.HbT=outdata.procConc.HbT(tindex,:);
-    outdata.procConc.t=t(tindex)-tRange(1);  
+    outdata.Conc.HbO=outdata.Conc.HbO(tindex,:);
+    outdata.Conc.HbR=outdata.Conc.HbR(tindex,:);
+    outdata.Conc.HbT=outdata.Conc.HbT(tindex,:);
+    outdata.Conc.t=t(tindex)-tRange(1);  
 end
 elseif length(tRange>=3)
     if ~isprocOD(var_name)
-    rawdata=inputdata.rawdata;
-    t=rawdata.t;
+    RawData=inputdata.RawData;
+    t=RawData.t;
     tindex=(t>tRange(1))&(t<tRange(2));
     tindex=find(tindex==1);
-    outdata.procOD.dod=rawdata.d(tindex,:);
-    outdata.procOD.t=t(tindex)-tRange(1);
-    %outdata.procOD.dod=nirs_detrend(rawdata.d,p);
-    %outdata.procOD.t=rawdata.t;
+    outdata.OD.dod=RawData.d(tindex,:);
+    outdata.OD.t=t(tindex)-tRange(1);
+    %outdata.OD.dod=nirs_detrend(RawData.d,p);
+    %outdata.OD.t=RawData.t;
     return
     elseif ~isprocConc(var_name)
-    t=outdata.procOD.t;
+    t=outdata.OD.t;
     tindex=(t>tRange(1))&(t<tRange(2));
     tindex=find(tindex==1);
-    outdata.procOD.dod=outdata.procOD.dod(tindex,:);
-    outdata.procOD.t=t(tindex)-tRange(1);    
+    outdata.OD.dod=outdata.OD.dod(tindex,:);
+    outdata.OD.t=t(tindex)-tRange(1);    
     else
-    t=outdata.procConc.t;
+    t=outdata.Conc.t;
     tindex=(t>tRange(1))&(t<tRange(2));
     tindex=find(tindex==1);
-    outdata.procConc.HbO=outdata.procConc.HbO(tindex,:);
-    outdata.procConc.HbR=outdata.procConc.HbR(tindex,:);
-    outdata.procConc.HbT=outdata.procConc.HbT(tindex,:);
-    outdata.procConc.t=t(tindex)-tRange(1);  
+    outdata.Conc.HbO=outdata.Conc.HbO(tindex,:);
+    outdata.Conc.HbR=outdata.Conc.HbR(tindex,:);
+    outdata.Conc.HbT=outdata.Conc.HbT(tindex,:);
+    outdata.Conc.t=t(tindex)-tRange(1);  
 end
     
 end
 
-%is exist procOD;
+%is exist OD;
 function [r]=isprocOD(var_name)
 r=0;
-x=strfind(var_name,'procOD');
+x=strfind(var_name,'OD');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
     end
 end
-%is exist procConc
+%is exist Conc
 function [r]=isprocConc(var_name)
 r=0;
-x=strfind(var_name,'procConc');
+x=strfind(var_name,'Conc');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;

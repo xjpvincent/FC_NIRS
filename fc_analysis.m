@@ -171,12 +171,12 @@ catch
 end
 datapath=strcat(directory,'\','processedData\',subject);
 load(datapath);
-GUI_DATA.currentData=procResult.rawdata;
+GUI_DATA.currentData=procResult.RawData;
 GUI_DATA.currentData.dc=procResult.dc;
 GUI_DATA.currentData.dod=procResult.dod;
 
 corr_hbo=corr(procResult.HbO);
-[map]=fc_map(procResult.rawdata.SD,corr_hbo);
+[map]=fc_map(procResult.RawData.SD,corr_hbo);
 axes(handles.fc_map1);
 imagesc(map);
 
@@ -188,10 +188,10 @@ imagesc(map);
 %updata the global variable's 
 % GUI_DATA.plotstate.selectedsubject=plot_subject;
 % imported_data = importdata(strcat(GUI_DATA.plotstate.workpath,'\','RawData\',plot_subject));
-% GUI_DATA.rawdata=imported_data;
-% GUI_DATA.rawdata.SD.MeasListVis=GUI_DATA.rawdata.SD.MeasListAct;
+% GUI_DATA.RawData=imported_data;
+% GUI_DATA.RawData.SD.MeasListVis=GUI_DATA.RawData.SD.MeasListAct;
 % GUI_DATA.currentData=imported_data;
-% GUI_DATA.currentData.SD.MeasListVis=GUI_DATA.rawdata.SD.MeasListAct;
+% GUI_DATA.currentData.SD.MeasListVis=GUI_DATA.RawData.SD.MeasListAct;
 
 
 

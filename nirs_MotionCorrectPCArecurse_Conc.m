@@ -50,10 +50,10 @@
 %
 %modified by J.P Xu 
 % at 20/8/2014
-function [result] = nirs_MotionCorrectPCArecurse_Conc(procConc,tIncMan, tMotion, tMask, std_thresh, amp_thresh, nSV, maxIter )
-HbO=procConc.HbO;
-HbR=procConc.HbR;
-fs=procConc.t;
+function [result] = nirs_MotionCorrectPCArecurse_Conc(Conc,tIncMan, tMotion, tMask, std_thresh, amp_thresh, nSV, maxIter )
+HbO=Conc.HbO;
+HbR=Conc.HbR;
+fs=Conc.t;
 
 tInc1=nirsMotionArtifact(HbO, fs, tIncMan, tMotion, tMask, std_thresh, amp_thresh);
 tInc2=nirsMotionArtifact(HbR, fs, tIncMan, tMotion, tMask, std_thresh, amp_thresh);
@@ -75,7 +75,7 @@ while length(find(tInc2==0))>0 & ii<maxIter
     ii=ii+1;
 end
 
-result=procConc;
+result=Conc;
 HbT=HbO+HbR;
 result.HbO=HbO;
 result.HbR=HbR;

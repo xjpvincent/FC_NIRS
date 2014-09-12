@@ -38,7 +38,15 @@ line_color=[0 0 1;
 
 %handles=guihandles(GUI_DATA.handles);
 axesSDG=handles.axestailorSDG;
-axis(axesSDG, [SD.xmin SD.xmax SD.ymin SD.ymax]);
+
+xymin=min([SD.SrcPos ;SD.DetPos]);
+xymax=max([SD.SrcPos ; SD.DetPos]);
+axis(axesSDG, [xymin(1) xymax(1) xymin(2) xymax(2)]);
+
+
+
+
+
 axis(axesSDG, 'image')
 set(axesSDG,'xticklabel','')
 set(axesSDG,'yticklabel','')

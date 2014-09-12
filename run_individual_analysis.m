@@ -38,35 +38,35 @@ if strcmp(ANALYSIS_PARA.fc_method,'seed-based')
         tmp=importdata(fullfile(input_directory,filesep,subject));
         if signal_type(1,1);
             if length(seed)>1
-            seed_timeseries=mean(tmp.procConc.HbO(:,seed)');
+            seed_timeseries=mean(tmp.Conc.HbO(:,seed)');
             seed_timeseries=seed_timeseries';
             else
-                seed_timeseries=tmp.procConc.HbO(:,seed);
+                seed_timeseries=tmp.Conc.HbO(:,seed);
             end
          
-            corr_map=fc_function(tmp.procConc.HbO,seed_timeseries,ANALYSIS_PARA.fc_method);
+            corr_map=fc_function(tmp.Conc.HbO,seed_timeseries,ANALYSIS_PARA.fc_method);
             Allsubject_HbO{i,1}=corr_map;
             save(fullfile(output_directory,filesep,strcat(subject(1:end-5),'seed_HbO.mat')),'corr_map');
         end
         if signal_type(2,1);
             if length(seed)>1
-                seed_timeseries=mean(tmp.procConc.HbR(:,seed)');
+                seed_timeseries=mean(tmp.Conc.HbR(:,seed)');
                 seed_timeseries=seed_timeseries';
             else
-                seed_timeseries=tmp.procConc.HbR(:,seed);
+                seed_timeseries=tmp.Conc.HbR(:,seed);
             end
-            corr_map=fc_function(tmp.procConc.HbR,seed_timeseries,ANALYSIS_PARA.fc_method);
+            corr_map=fc_function(tmp.Conc.HbR,seed_timeseries,ANALYSIS_PARA.fc_method);
             Allsubject_HbR{i,1}=corr_map;
             save(fullfile(output_directory,filesep,strcat(subject(1:end-5),'seed_HbR.mat')),'corr_map')
         end
         if signal_type(3,1);
             if length(seed)>1
-                seed_timeseries=mean(tmp.procConc.HbT(:,seed)');
+                seed_timeseries=mean(tmp.Conc.HbT(:,seed)');
                 seed_timeseries=seed_timeseries';
             else
-                seed_timeseries=tmp.procConc.HbT(:,seed);
+                seed_timeseries=tmp.Conc.HbT(:,seed);
             end
-            corr_map=fc_function(tmp.procConc.HbT,seed_timeseries,ANALYSIS_PARA.fc_method);
+            corr_map=fc_function(tmp.Conc.HbT,seed_timeseries,ANALYSIS_PARA.fc_method);
             Allsubject_HbT{i,1}=corr_map;
             save(fullfile(output_directory,filesep,strcat(subject(1:end-5),'seed_HbT.mat')),'corr_map')
         end
@@ -102,17 +102,17 @@ if strcmp(ANALYSIS_PARA.fc_method,'whole-brain')
         subject=sublist{i};
         tmp=importdata(fullfile(input_directory,filesep,subject));
         if signal_type(1,1);
-            corr_map=fc_function(tmp.procConc.HbO,[],ANALYSIS_PARA.fc_method);
+            corr_map=fc_function(tmp.Conc.HbO,[],ANALYSIS_PARA.fc_method);
             Allsubject_HbO{i,1}=corr_map;
             save(fullfile(output_directory,filesep,strcat(subject(1:end-5),'wholebrain_HbO.mat')),'corr_map');
         end
         if signal_type(2,1);
-            corr_map=fc_function(tmp.procConc.HbR,[],ANALYSIS_PARA.fc_method);
+            corr_map=fc_function(tmp.Conc.HbR,[],ANALYSIS_PARA.fc_method);
             Allsubject_HbR{i,1}=corr_map;
             save(fullfile(output_directory,filesep,strcat(subject(1:end-5),'wholebrain_HbR.mat')),'corr_map')
         end
         if signal_type(3,1);
-            corr_map=fc_function(tmp.procConc.HbT,[],ANALYSIS_PARA.fc_method);
+            corr_map=fc_function(tmp.Conc.HbT,[],ANALYSIS_PARA.fc_method);
             Allsubject_HbT{i,1}=corr_map;
             save(fullfile(output_directory,filesep,strcat(subject(1:end-5),'wholebrain_HbT.mat')),'corr_map')
         end

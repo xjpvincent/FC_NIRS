@@ -2,12 +2,12 @@ function   rest_NIRS_sdgToggleLines(hObject, eventdata, handles)
 %This function is called when the user clicks on one of the meausrement
 %lines in the SDG window
 global GUI_DATA;
-if isempty(GUI_DATA.rawdata.SD) 
+if isempty(GUI_DATA.RawData.SD) 
     x=0
     return;
 end
 
-SD      = GUI_DATA.rawdata.SD;
+SD      = GUI_DATA.RawData.SD;
 %handles=guihandles(GUI_DATA.handles);
 axesSDG =handles.axesSDG;
 

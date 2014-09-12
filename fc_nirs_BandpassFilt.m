@@ -29,20 +29,20 @@ lpf=band(2);
 var_name=fieldnames(inputdata);
 outdata=inputdata;
 if ~isprocOD(var_name)
-    rawdata=inputdata.rawdata;
-    outdata.procOD.dod=nirs_BandpassFilt(rawdata.d,rawdata.t, hpf, lpf);
-    outdata.procOD.t=rawdata.t;
+    RawData=inputdata.RawData;
+    outdata.OD.dod=nirs_BandpassFilt(RawData.d,RawData.t, hpf, lpf);
+    outdata.OD.t=RawData.t;
     return
 elseif ~isprocConc(var_name)
-    outdata.procOD.dod=nirs_BandpassFilt(outdata.procOD.dod,...
-    outdata.procOD.t, hpf, lpf);
+    outdata.OD.dod=nirs_BandpassFilt(outdata.OD.dod,...
+    outdata.OD.t, hpf, lpf);
 else
-    outdata.procConc.HbO=nirs_BandpassFilt(outdata.procConc.HbO,...
-        outdata.procConc.t, hpf, lpf);
-    outdata.procConc.HbR=nirs_BandpassFilt(outdata.procConc.HbR,...
-        outdata.procConc.t, hpf, lpf);
-    outdata.procConc.HbT=nirs_BandpassFilt(outdata.procConc.HbT,...
-        outdata.procConc.t, hpf, lpf);
+    outdata.Conc.HbO=nirs_BandpassFilt(outdata.Conc.HbO,...
+        outdata.Conc.t, hpf, lpf);
+    outdata.Conc.HbR=nirs_BandpassFilt(outdata.Conc.HbR,...
+        outdata.Conc.t, hpf, lpf);
+    outdata.Conc.HbT=nirs_BandpassFilt(outdata.Conc.HbT,...
+        outdata.Conc.t, hpf, lpf);
 end
 
 
@@ -83,19 +83,19 @@ else
     y2 = ylpf;
 end
 
-%is exist procOD;
+%is exist OD;
 function [r]=isprocOD(var_name)
 r=0;
-x=strfind(var_name,'procOD');
+x=strfind(var_name,'OD');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
     end
 end
-%is exist procConc
+%is exist Conc
 function [r]=isprocConc(var_name)
 r=0;
-x=strfind(var_name,'procConc');
+x=strfind(var_name,'Conc');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;

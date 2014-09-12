@@ -3,8 +3,8 @@ function [ outdata ] = fc_nirs_Intensity2OD( inputdata,para )
 %   Detailed explanation goes here
 %para=str2num(para);
 outdata=inputdata;
-outdata.procOD.dod=hmrIntensity2OD(inputdata.rawdata.d);
-outdata.procOD.t=inputdata.rawdata.t;
+outdata.OD.dod=hmrIntensity2OD(inputdata.RawData.d);
+outdata.OD.t=inputdata.RawData.t;
 function dod = hmrIntensity2OD( d )
 %Reference: homer2
 % convert to dod

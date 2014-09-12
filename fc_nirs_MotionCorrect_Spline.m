@@ -10,21 +10,21 @@ p=str2num(para.p);
 var_name=fieldnames(inputdata);
 outdata=inputdata;
 if ~isprocOD(var_name)
-    rawdata=inputdata.rawdata;
-    outdata.procOD.dod=nirs_MotionCorrect_Spline(rawdata.d,rawdata.t, ...
+    RawData=inputdata.RawData;
+    outdata.OD.dod=nirs_MotionCorrect_Spline(RawData.d,RawData.t, ...
         tMotion, tMask, STDEVthresh, AMPthresh, p);
-    outdata.procOD.t=rawdata.t;
+    outdata.OD.t=RawData.t;
     return
 elseif ~isprocConc(var_name)
-    outdata.procOD.dod=nirs_MotionCorrect_Spline(outdata.procOD.dod,...
-    outdata.procOD.t, tMotion, tMask, STDEVthresh, AMPthresh, p);
+    outdata.OD.dod=nirs_MotionCorrect_Spline(outdata.OD.dod,...
+    outdata.OD.t, tMotion, tMask, STDEVthresh, AMPthresh, p);
 else
-    outdata.procConc.HbO=nirs_MotionCorrect_Spline(outdata.procConc.HbO,...
-        outdata.procConc.t, tMotion, tMask, STDEVthresh, AMPthresh, p);
-    outdata.procConc.HbR=nirs_MotionCorrect_Spline(outdata.procConc.HbR,...
-        outdata.procConc.t, tMotion, tMask, STDEVthresh, AMPthresh, p);
-    outdata.procConc.HbT=nirs_MotionCorrect_Spline(outdata.procConc.HbT,...
-        outdata.procConc.t, tMotion, tMask, STDEVthresh, AMPthresh, p);
+    outdata.Conc.HbO=nirs_MotionCorrect_Spline(outdata.Conc.HbO,...
+        outdata.Conc.t, tMotion, tMask, STDEVthresh, AMPthresh, p);
+    outdata.Conc.HbR=nirs_MotionCorrect_Spline(outdata.Conc.HbR,...
+        outdata.Conc.t, tMotion, tMask, STDEVthresh, AMPthresh, p);
+    outdata.Conc.HbT=nirs_MotionCorrect_Spline(outdata.Conc.HbT,...
+        outdata.Conc.t, tMotion, tMask, STDEVthresh, AMPthresh, p);
 end
 
 
@@ -39,19 +39,19 @@ function [y] = nirs_MotionCorrect_Spline(x, t, tMotion, tMask, STDEVthresh, AMPt
 % tmp(1333:1334,:)=0;
 y = fc_nirs_hmrMotionCorrectSpline(x, t, tIncCh, p);
 
-%is exist procOD;
+%is exist OD;
 function [r]=isprocOD(var_name)
 r=0;
-x=strfind(var_name,'procOD');
+x=strfind(var_name,'OD');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
     end
 end
-%is exist procConc
+%is exist Conc
 function [r]=isprocConc(var_name)
 r=0;
-x=strfind(var_name,'procConc');
+x=strfind(var_name,'Conc');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;

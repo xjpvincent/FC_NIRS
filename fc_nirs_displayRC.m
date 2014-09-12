@@ -30,7 +30,7 @@ if isfield( DISPLAY_STATE, 'plotLst' )
         plotLst = lst2;
         lst = find(DISPLAY_DATA.SD.MeasListAct(plotLst)==1);
 end
-HbO=DISPLAY_DATA.procConc.HbO;
-HbR=DISPLAY_DATA.procConc.HbR;
-display_t=DISPLAY_DATA.procConc.t;
+HbO=DISPLAY_DATA.Conc.HbO;
+HbR=DISPLAY_DATA.Conc.HbR;
+display_t=DISPLAY_DATA.Conc.t;
 wl=DISPLAY_STATE.wl2;

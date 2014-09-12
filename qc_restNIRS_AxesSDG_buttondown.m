@@ -2,7 +2,7 @@ function qc_restNIRS_AxesSDG_buttondown(hObject, eventdata, handles)
 
 global GUI_DATA;
 %fig_processing=guihandles(GUI_DATA.fig_processing);
-if isempty(GUI_DATA.rawdata.SD) 
+if isempty(GUI_DATA.RawData.SD) 
     return;
 end
 
@@ -15,7 +15,7 @@ end
 
 mouseevent = get(h,'selectiontype');
 
-SD = GUI_DATA.rawdata.SD;
+SD = GUI_DATA.RawData.SD;
 
 %find the closest optode
 rmin = ( (pos(1,1)-SD.SrcPos(1,1))^2 + (pos(1,2)-SD.SrcPos(1,2))^2 )^0.5 ;

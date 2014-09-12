@@ -139,8 +139,8 @@ if ~isempty(datalist)
         DISPLAY_DATA=importdata(fullfile(pathnm,'\',datalist{1}));
     end
     if ~isempty(strfind(datalist{1},'.nirs'))
-        DISPLAY_DATA.rawdata=importdata(fullfile(pathnm,'\',datalist{1}));
-        DISPLAY_DATA.SD=DISPLAY_DATA.rawdata.SD;
+        DISPLAY_DATA.RawData=importdata(fullfile(pathnm,'\',datalist{1}));
+        DISPLAY_DATA.SD=DISPLAY_DATA.RawData.SD;
     end
 else 
     msgbox('The selected input directory has no nirs or proc data.','warn'); 
@@ -376,7 +376,7 @@ if size(nirsfilelist,1)>0
          for fileidx=1:size(nirsfilelist,1)
             datalist{fileidx,1}=nirsfilelist(fileidx).name;
          end
-         DISPLAY_DATA.rawdata=importdata(fullfile(pathnm,datalist{1,1}));
+         DISPLAY_DATA.RawData=importdata(fullfile(pathnm,datalist{1,1}));
     end
 else
     if size(procfilelist,1)>0
@@ -433,8 +433,8 @@ if ~isempty(strfind(subname,'.proc'))
 DISPLAY_DATA=importdata(fullfile(datapath,subname));
 end
 if ~isempty(strfind(subname,'.nirs'))
-    DISPLAY_DATA.rawdata=importdata(fullfile(datapath,subname));
-    DISPLAY_DATA.SD=DISPLAY_DATA.rawdata.SD;
+    DISPLAY_DATA.RawData=importdata(fullfile(datapath,subname));
+    DISPLAY_DATA.SD=DISPLAY_DATA.RawData.SD;
 end
 var_name=fieldnames(DISPLAY_DATA);
 if israwdata(var_name)
@@ -534,28 +534,28 @@ clear global SIGNAL_TYPE4;
 clear global DISPLAY_STATE;
 clear global DISPLAY_DATA;
 
-%is exist rawdata;
+%is exist RawData;
 function [r]=israwdata(var_name)
 r=0;
-x=strfind(var_name,'rawdata');
+x=strfind(var_name,'RawData');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
     end
 end
-%is exist procOD;
+%is exist OD;
 function [r]=isprocOD(var_name)
 r=0;
-x=strfind(var_name,'procOD');
+x=strfind(var_name,'OD');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
     end
 end
-%is exist procConc
+%is exist Conc
 function [r]=isprocConc(var_name)
 r=0;
-x=strfind(var_name,'procConc');
+x=strfind(var_name,'Conc');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;

@@ -65,8 +65,8 @@ GUI_DATA=initGUI_DATA(hObject,varargin);
 % %import data 
 % 
 % imported_data = importdata(strcat(pathname,filename));
-% GUI_DATA.rawdata=imported_data;
-% GUI_DATA.rawdata.SD.MeasListVis=GUI_DATA.rawdata.SD.MeasListAct;
+% GUI_DATA.RawData=imported_data;
+% GUI_DATA.RawData.SD.MeasListVis=GUI_DATA.RawData.SD.MeasListAct;
 
 %plot the sources and detectors
 %axesSDG(handles);
@@ -156,10 +156,10 @@ end
 %updata the global variable's 
 GUI_DATA.plotstate.selectedsubject=plot_subject;
 imported_data = importdata(strcat(GUI_DATA.plotstate.workpath,'\','RawData\',plot_subject));
-GUI_DATA.rawdata=imported_data;
-GUI_DATA.rawdata.SD.MeasListVis=GUI_DATA.rawdata.SD.MeasListAct;
+GUI_DATA.RawData=imported_data;
+GUI_DATA.RawData.SD.MeasListVis=GUI_DATA.RawData.SD.MeasListAct;
 GUI_DATA.currentData=imported_data;
-GUI_DATA.currentData.SD.MeasListVis=GUI_DATA.rawdata.SD.MeasListAct;
+GUI_DATA.currentData.SD.MeasListVis=GUI_DATA.RawData.SD.MeasListAct;
 
 %reset the plotstate
 %GUI_DATA.plotstate.plotType=1;

@@ -227,22 +227,22 @@ for i=1:size(sublist,1)
     data_fieldnames=fieldnames(copy_data);
     for k=1:size(data_fieldnames,1)
         switch data_fieldnames{k,1}
-            case 'rawdata'
-                t=copy_data.rawdata.t;
-                d=copy_data.rawdata.d;
+            case 'RawData'
+                t=copy_data.RawData.t;
+                d=copy_data.RawData.d;
                 tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
                 t=t(tindex)-t(tindex(1));
                 d=d(tindex,:);
-                copy_data.rawdata.t=t;
-                copy_data.rawdata.d=d;
-            case 'procOD'
-                t=copy_data.procOD.t;
-                dod=copy_data.procOD.dod;
+                copy_data.RawData.t=t;
+                copy_data.RawData.d=d;
+            case 'OD'
+                t=copy_data.OD.t;
+                dod=copy_data.OD.dod;
                 tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
                 t=t(tindex)-t(tindex(1));
                 dod=dod(tindex,:);
-                copy_data.procOD.t=t;
-                copy_data.procOD.dod=dod;
+                copy_data.OD.t=t;
+                copy_data.OD.dod=dod;
             case 'rawConc'
                 t=copy_data.rawConc.t;
                 HbO=copy_data.rawConc.HbO;
@@ -257,20 +257,20 @@ for i=1:size(sublist,1)
                 copy_data.rawConc.HbO=HbO;
                 copy_data.rawConc.HbR=HbR;
                 copy_data.rawConc.HbT=HbT;
-            case 'procConc'
-                t=copy_data.procConc.t;
-                HbO=copy_data.procConc.HbO;
-                HbR=copy_data.procConc.HbR;
-                HbT=copy_data.procConc.HbT;
+            case 'Conc'
+                t=copy_data.Conc.t;
+                HbO=copy_data.Conc.HbO;
+                HbR=copy_data.Conc.HbR;
+                HbT=copy_data.Conc.HbT;
                 tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
                 t=t(tindex)-t(tindex(1));
                 HbO=HbO(tindex,:);
                 HbR=HbR(tindex,:);
                 HbT=HbT(tindex,:);
-                copy_data.procConc.t=t;
-                copy_data.procConc.HbO=HbO;
-                copy_data.procConc.HbR=HbR;
-                copy_data.procConc.HbT=HbT;
+                copy_data.Conc.t=t;
+                copy_data.Conc.HbO=HbO;
+                copy_data.Conc.HbR=HbR;
+                copy_data.Conc.HbT=HbT;
         end
         
     end

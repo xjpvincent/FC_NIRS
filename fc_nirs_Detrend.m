@@ -5,16 +5,16 @@ var_name=fieldnames(inputdata);
 p=str2num(p);
 outdata=inputdata;
 if ~isprocOD(var_name)
-    rawdata=inputdata.rawdata;
-    outdata.procOD.dod=nirs_detrend(rawdata.d,p);
-    outdata.procOD.t=rawdata.t;
+    RawData=inputdata.RawData;
+    outdata.OD.dod=nirs_detrend(RawData.d,p);
+    outdata.OD.t=RawData.t;
     return
-elseif ~isprocConc(var_name)
-    outdata.procOD.dod=nirs_detrend(outdata.procOD.dod,p);
+elseif ~isConc(var_name)
+    outdata.OD.dod=nirs_detrend(outdata.OD.dod,p);
 else
-    outdata.procConc.HbO=nirs_detrend(outdata.procConc.HbO,p);
-    outdata.procConc.HbR=nirs_detrend(outdata.procConc.HbR,p);
-    outdata.procConc.HbT=nirs_detrend(outdata.procConc.HbT,p);
+    outdata.Conc.HbO=nirs_detrend(outdata.Conc.HbO,p);
+    outdata.Conc.HbR=nirs_detrend(outdata.Conc.HbR,p);
+    outdata.Conc.HbT=nirs_detrend(outdata.Conc.HbT,p);
 end
 
 
@@ -56,19 +56,19 @@ end
 y     = x - G*(pinv(full(G))*x);
 
 
-%is exist procOD;
+%is exist OD;
 function [r]=isprocOD(var_name)
 r=0;
-x=strfind(var_name,'procOD');
+x=strfind(var_name,'OD');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
     end
 end
-%is exist procConc
-function [r]=isprocConc(var_name)
+%is exist Conc
+function [r]=isConc(var_name)
 r=0;
-x=strfind(var_name,'procConc');
+x=strfind(var_name,'Conc');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;

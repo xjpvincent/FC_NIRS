@@ -25,18 +25,18 @@ signal_type1=2;
 switch signal_type1
     case 1
         %raw od
-        display_data=DISPLAY_DATA.rawdata.d;
+        display_data=DISPLAY_DATA.RawData.d;
         display_data=display_data(:,1+(signal_type2-1)*...
-            size(DISPLAY_DATA.rawdata.d,2)/2:size(DISPLAY_DATA.rawdata.d,2)/2+...
-            (signal_type2-1)*size(DISPLAY_DATA.rawdata.d,2)/2);
-        display_t=DISPLAY_DATA.rawdata.t;
+            size(DISPLAY_DATA.RawData.d,2)/2:size(DISPLAY_DATA.RawData.d,2)/2+...
+            (signal_type2-1)*size(DISPLAY_DATA.RawData.d,2)/2);
+        display_t=DISPLAY_DATA.RawData.t;
     case 2;
         %normalization od
-        display_data=DISPLAY_DATA.procOD.dod;
+        display_data=DISPLAY_DATA.OD.dod;
         display_data=display_data(:,1+(signal_type2-1)*...
-            size(DISPLAY_DATA.procOD.dod,2)/2:size(DISPLAY_DATA.procOD.dod,2)/2+...
-            (signal_type2-1)*size(DISPLAY_DATA.procOD.dod,2)/2);
-        display_t=DISPLAY_DATA.procOD.t;
+            size(DISPLAY_DATA.OD.dod,2)/2:size(DISPLAY_DATA.OD.dod,2)/2+...
+            (signal_type2-1)*size(DISPLAY_DATA.OD.dod,2)/2);
+        display_t=DISPLAY_DATA.OD.t;
     case 3
         %unprocessed Conc;
         switch signal_type2
@@ -59,16 +59,16 @@ switch signal_type1
         switch signal_type2
             %HbO
             case 1
-                display_data=DISPLAY_DATA.procConc.HbO;
-                display_t=DISPLAY_DATA.procConc.t;
+                display_data=DISPLAY_DATA.Conc.HbO;
+                display_t=DISPLAY_DATA.Conc.t;
                 %HbR
             case 2
-                display_data=DISPLAY_DATA.procConc.HbR;
-                display_t=DISPLAY_DATA.procConc.t;
+                display_data=DISPLAY_DATA.Conc.HbR;
+                display_t=DISPLAY_DATA.Conc.t;
                 %HbT
             case 3
-                display_data=DISPLAY_DATA.procConc.HbT;
-                display_t=DISPLAY_DATA.procConc.t;
+                display_data=DISPLAY_DATA.Conc.HbT;
+                display_t=DISPLAY_DATA.Conc.t;
         end
 end
 if ~isfield(DISPLAY_STATE,'stdEvthresh2')

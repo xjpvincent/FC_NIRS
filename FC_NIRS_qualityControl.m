@@ -207,10 +207,10 @@ end
 global SIGNAL_TYPE2;
 signal_type=SIGNAL_TYPE2(find(showsignal==1));
 set(handles.signal_type1,'String',signal_type);
-end_time1=DISPLAY_DATA.rawdata.t(end);
+end_time1=DISPLAY_DATA.RawData.t(end);
 
 set(handles.end_time1,'String',num2str(end_time1));
-end_time2=DISPLAY_DATA.procConc.t(end);
+end_time2=DISPLAY_DATA.Conc.t(end);
 set(handles.end_time2,'String',num2str(end_time2));
 %plot four axes;
 %plot SDG
@@ -694,9 +694,9 @@ if ~isempty(datalist)
     global DISPLAY_DATA;
     DISPLAY_DATA=x;
 end
-end_time1=DISPLAY_DATA.rawdata.t(end);
+end_time1=DISPLAY_DATA.RawData.t(end);
 set(handles.end_time1,'String',num2str(end_time1));
-end_time2=DISPLAY_DATA.procConc.t(end);
+end_time2=DISPLAY_DATA.Conc.t(end);
 set(handles.end_time2,'String',num2str(end_time2));
 %set the popbuttion;
 var_name=fieldnames(DISPLAY_DATA);
@@ -1488,22 +1488,22 @@ global DISPLAY_DATA;
 data_fieldnames=fieldnames(DISPLAY_DATA);
 for k=1:size(data_fieldnames,1)
     switch data_fieldnames{k,1}
-        case 'rawdata'
-            t=DISPLAY_DATA.rawdata.t;
-            d=DISPLAY_DATA.rawdata.d;
+        case 'RawData'
+            t=DISPLAY_DATA.RawData.t;
+            d=DISPLAY_DATA.RawData.d;
             tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
             t=t(tindex)-t(tindex(1));
             d=d(tindex,:);
-            DISPLAY_DATA.rawdata.t=t;
+            DISPLAY_DATA.RawData.t=t;
             DISPLAY_DATA.rawedata.d=d;
-        case 'procOD'
-            t=DISPLAY_DATA.procOD.t;
-            dod=DISPLAY_DATA.procOD.dod;
+        case 'OD'
+            t=DISPLAY_DATA.OD.t;
+            dod=DISPLAY_DATA.OD.dod;
             tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
             t=t(tindex)-t(tindex(1));
             dod=dod(tindex,:);
-            DISPLAY_DATA.procOD.t=t;
-            DISPLAY_DATA.procOD.dod=dod;
+            DISPLAY_DATA.OD.t=t;
+            DISPLAY_DATA.OD.dod=dod;
         case 'rawConc'
             t=DISPLAY_DATA.rawConc.t;
             HbO=DISPLAY_DATA.rawConc.HbO;
@@ -1518,20 +1518,20 @@ for k=1:size(data_fieldnames,1)
             DISPLAY_DATA.rawConc.HbO=HbO;
             DISPLAY_DATA.rawConc.HbR=HbR;
             DISPLAY_DATA.rawConc.HbT=HbT;
-        case 'procConc'
-            t=DISPLAY_DATA.procConc.t;
-            HbO=DISPLAY_DATA.procConc.HbO;
-            HbR=DISPLAY_DATA.procConc.HbR;
-            HbT=DISPLAY_DATA.procConc.HbT;
+        case 'Conc'
+            t=DISPLAY_DATA.Conc.t;
+            HbO=DISPLAY_DATA.Conc.HbO;
+            HbR=DISPLAY_DATA.Conc.HbR;
+            HbT=DISPLAY_DATA.Conc.HbT;
             tindex=find(t>(startTime-preTime)&t<(startTime+postTime));
             t=t(tindex)-t(tindex(1));
             HbO=HbO(tindex,:);
             HbR=HbR(tindex,:);
             HbT=HbT(tindex,:);
-            DISPLAY_DATA.procConc.t=t;
-            DISPLAY_DATA.procConc.HbO=HbO;
-            DISPLAY_DATA.procConc.HbR=HbR;
-            DISPLAY_DATA.procConc.HbT=HbT;
+            DISPLAY_DATA.Conc.t=t;
+            DISPLAY_DATA.Conc.HbO=HbO;
+            DISPLAY_DATA.Conc.HbR=HbR;
+            DISPLAY_DATA.Conc.HbT=HbT;
     end
 end
 set(handles.edit_startTime,'String','0');
@@ -1565,28 +1565,28 @@ function edit_startTime_KeyPressFcn(hObject, eventdata, handles)
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
 
-%judge is exist rawdata;
+%judge is exist RawData;
 function [r]=israwdata(var_name)
 r=0;
-x=strfind(var_name,'rawdata');
+x=strfind(var_name,'RawData');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
     end
 end
-%is exist procOD;
+%is exist OD;
 function [r]=isprocOD(var_name)
 r=0;
-x=strfind(var_name,'procOD');
+x=strfind(var_name,'OD');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;
     end
 end
-%is exist procConc
+%is exist Conc
 function [r]=isprocConc(var_name)
 r=0;
-x=strfind(var_name,'procConc');
+x=strfind(var_name,'Conc');
 for i=1:size(x,1)
     if ~isempty(x{i,1})
         r=1;

@@ -111,11 +111,11 @@ if strcmp(class(sublist),'char')
 end
 selected_sub=sublist{get(handles.raw_sublist,'Value')};
 x=load(strcat(workpath,'\processedData\',selected_sub(1:end-5),'procData.mat')); 
-GUI_DATA.rawdata=x.procResult.rawdata;
+GUI_DATA.RawData=x.procResult.RawData;
 GUI_DATA.currentData.dc=x.procResult.dc;
 GUI_DATA.currentData.dod=x.procResult.dod;
-GUI_DATA.currentData.SD=x.procResult.rawdata.SD;
-GUI_DATA.currentData.t=x.procResult.rawdata.t;
+GUI_DATA.currentData.SD=x.procResult.RawData.SD;
+GUI_DATA.currentData.t=x.procResult.RawData.t;
 
 
 % else
@@ -829,7 +829,7 @@ end
 selected_sub=sublist{get(handles.raw_sublist,'Value')};
 
 x=load(strcat(workpath,'\processedData\',selected_sub(1:end-5),'procData.mat'));   
-d=x.procResult.rawdata.d;
+d=x.procResult.RawData.d;
 v_d=VAR(d);
 m_d=mean(d);
 opticalSNR=m_d./v_d;
@@ -873,7 +873,7 @@ end
 selected_sub=sublist{get(handles.raw_sublist,'Value')};
 
 x=load(strcat(workpath,'\processedData\',selected_sub(1:end-5),'procData.mat'));   
-d=x.procResult.rawdata.d;
+d=x.procResult.RawData.d;
 v_d=VAR(d);
 m_d=mean(d);
 opticalSNR=m_d./v_d;

@@ -2,7 +2,7 @@ function []=restNIRS_Precessing(hObject, eventdata, handles)
 
 fprintf('restNIRS_precessing.line3\n');
 global GUI_DATA;
-rawdata=GUI_DATA.rawdata;
+RawData=GUI_DATA.RawData;
 
 %Intensity2OD
 %handles=guihandles(GUI_DATA.handles);
@@ -26,11 +26,11 @@ if get(handles.check_current,'Value')>0;
     %
     %procResult.SD=SD;
     %procResult.d=d;
-    %procResult.t=rawdata.t;
-    %procResult.s=rawdata.s;
+    %procResult.t=RawData.t;
+    %procResult.s=RawData.s;
     GUI_DATA.currentData.dc=dc;
     GUI_DATA.currentData.dod=dod;
-    procResult.rawdata=rawdata;
+    procResult.RawData=RawData;
     procResult.dc=dc;
     procResult.dod=dod;
     %HbO,HbR,HbT data;
@@ -41,7 +41,7 @@ if get(handles.check_current,'Value')>0;
     Corr_matrix.HbO=corr(Conc.HbO);
     Corr_matrix.HbR=corr(Conc.HbR);
     Corr_matrix.HbT=corr(Conc.HbT);
-    Conc.t=rawdata.t;
+    Conc.t=RawData.t;
 %     save(strcat(workpath,'\','precessedData\',sublist{i}(1:end-5),'.mat'),'procResult');
 %     save(strcat(workpath,'\','precessedData\',sublist{i}(1:end-5),'Conc.mat'),'Conc');
 %     save(strcat(workpath,'\','precessedData\',sublist{i}(1:end-5),'Corr_matrix.mat'),'Corr_matrix');
@@ -60,10 +60,10 @@ if get(handles.check_group,'Value')>0
     networkMatrix=cell(length,3);
     for i=1:size(sublist,1)
         %Intensity2Con
-        rawdata=importdata(strcat(workpath,'\RawData\',sublist{i}));
-        SD=rawdata.SD;
-        d=rawdata.d;
-        fs=rawdata.t;
+        RawData=importdata(strcat(workpath,'\RawData\',sublist{i}));
+        SD=RawData.SD;
+        d=RawData.d;
+        fs=RawData.t;
         ppf=[6.0 6.0];
         %detrend
         d=spm_detrend(d,1);
@@ -71,8 +71,8 @@ if get(handles.check_group,'Value')>0
         %
         %procResult.SD=SD;
         %procResult.d=d;
-        %procResult.t=rawdata;
-        procResult.rawdata=rawdata;
+        %procResult.t=RawData;
+        procResult.RawData=RawData;
         procResult.dc=dc;
         procResult.dod=dod;
         procResult.HbO=squeeze(dc(:,1,:));
@@ -91,7 +91,7 @@ if get(handles.check_group,'Value')>0
         networkMatrix{i,1}=Corr_matrix.HbO;
         networkMatrix{i,2}=Corr_matrix.HbR;
         networkMatrix{i,3}=Corr_matrix.HbT;
-        Conc.t=rawdata.t;
+        Conc.t=RawData.t;
         waitbar(i/ length,h,strcat(sublist{i},' is finished'));
 %         if exist(strcat(workpath,'\','precessedData\',sublist{i}(1:end-5),'.mat'),'file')
 %             choice=questdlg(strcat('There already exist the   ',sublist{i},''',s processed result.Do you want to cover it?'),...

@@ -12,9 +12,9 @@ end_time2=str2num(get(handles.end_time2,'String'));
 catch
     display('please check the tRange you input');
 end
-tRange=DISPLAY_DATA.rawdata.t;
+tRange=DISPLAY_DATA.RawData.t;
 tindex=find(tRange>=start_time2&tRange<=end_time2);
-d=DISPLAY_DATA.rawdata.d(tindex,:);
+d=DISPLAY_DATA.RawData.d(tindex,:);
 
 v_d=std(d);
 m_d=mean(d);
