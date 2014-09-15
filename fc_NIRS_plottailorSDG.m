@@ -74,13 +74,13 @@ for ii=1:length(lst2)
 end
 
 % ADD SOURCE AND DETECTOR LABELS
-for idx=1:SD.nSrcs
+for idx=1:size(SD.SrcPos,1)
     if ~isempty(find(SD.MeasList(:,1)==idx))
         h = text( SD.SrcPos(idx,1), SD.SrcPos(idx,2), sprintf('%c', 64+idx), 'fontweight','bold' );
         set(h,'ButtonDownFcn',get(axesSDG,'ButtonDownFcn'));
     end
 end
-for idx=1:SD.nDets
+for idx=1:size(SD.DetPos,1)
     if ~isempty(find(SD.MeasList(:,2)==idx))
         h = text( SD.DetPos(idx,1), SD.DetPos(idx,2), sprintf('%d', idx), 'fontweight','bold' );
         set(h,'ButtonDownFcn',get(axesSDG,'ButtonDownFcn'));
