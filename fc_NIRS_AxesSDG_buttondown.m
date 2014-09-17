@@ -1,5 +1,8 @@
 function fc_NIRS_AxesSDG_buttondown(hObject, eventdata, handles)
-
+%
+% modified from Homer2.
+%
+% author:Xujingping, 2014/9/16; 
 global DISPLAY_DATA;
 global DISPLAY_STATE;
 %handles=guihandles(GUI_DATA.handles);

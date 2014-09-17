@@ -116,11 +116,11 @@ if isfield( DISPLAY_STATE, 'plot' )
                 else               
                     if isfield(DISPLAY_STATE,'plotLst') && ~SD.MeasListAct(DISPLAY_STATE.plotLst(idx))
                         set(h,'linewidth',2);
-                        set(h,'linestyle','--');
+                        set(h,'linestyle','-.');
                     end
                     if isfield(DISPLAY_STATE,'plotLst') && ~SD.MeasListVis(DISPLAY_STATE.plotLst(idx))
-                        set(h,'linewidth',1);
-                        set(h,'linestyle',':');
+                        set(h,'linewidth',2);
+                        set(h,'linestyle','-.');
                     end
                 end
             end

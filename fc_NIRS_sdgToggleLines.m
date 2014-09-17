@@ -33,6 +33,12 @@ if strcmp(mouseevent,'alt')
     elseif strcmp(get(h2(idx),'linestyle'), '--')
         set(h2(idx),'linestyle','-')
         SD.MeasListVis(lst)=1;
+    elseif strcmp(get(h2(idx),'linestyle'), '-.')
+        set(h2(idx),'linestyle','-')
+        SD.MeasListVis(lst)=1;
+     elseif strcmp(get(h2(idx),'linestyle'), ':')
+        set(h2(idx),'linestyle','-')
+        SD.MeasListVis(lst)=1;
 %     elseif strcmp(get(h2(idx),'linestyle'), ':')
 %         set(h2(idx),'linestyle','-')
 %         SD.MeasListVis(lst)=1;
@@ -49,6 +55,12 @@ elseif strcmp(mouseevent,'normal')
     elseif strcmp(get(h2(idx),'linestyle'), '--')
         set(h2(idx),'linestyle','-')
         SD.MeasListAct(lst)=1;
+    elseif strcmp(get(h2(idx),'linestyle'), '-.')
+        set(h2(idx),'linestyle','-')
+        SD.MeasListVis(lst)=1;
+    elseif strcmp(get(h2(idx),'linestyle'), ':')
+        set(h2(idx),'linestyle','-')
+        SD.MeasListVis(lst)=1;
 %     elseif strcmp(get(h2(idx),'linestyle'), ':')
 %         set(h2(idx),'linestyle','-')
 %         SD.MeasListAct(lst)=0;

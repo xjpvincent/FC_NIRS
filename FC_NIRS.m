@@ -53,6 +53,7 @@ function FC_NIRS_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to FC_NIRS (see VARARGIN)
 
 % Choose default command line output for FC_NIRS
+warning off;
 global GUI_DATA;
 GUI_DATA=initGUI_DATA();
 axes(handles.logo_pic);

@@ -10,7 +10,7 @@ SD=handles.SD;
 
 
 
-axes(handles.individualResult);
+ axes(handles.individualResult);
 % position=get(handles.fcMap,'Value');
 % center=[180 250];
 % width=60;
@@ -67,6 +67,6 @@ if strcmp(fc_type,'wholebrain')
         imagesc(tmp.corr_map);
     end
 end
-axes(handles.individualResult,[1 1 1 3]);
+%axis(handles.individualResult,[1 1 1 3]);
 
 colorbar;

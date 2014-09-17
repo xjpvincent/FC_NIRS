@@ -1176,7 +1176,7 @@ if ~isempty(methodlist)
     else 
         set(handles.CalListbox,'Value',1);
     end
-    set(handles.MethodList,'String',methodlist);
+%     set(handles.MethodList,'String',methodlist);
     set(handles.CalListbox,'String',calList);
 
 end
@@ -1206,7 +1206,7 @@ if ~isempty(calList)
     else 
         set(handles.CalListbox,'Value',1);
     end
-    set(handles.MethodList,'String',methodlist);
+%     set(handles.MethodList,'String',methodlist);
     set(handles.CalListbox,'String',calList);
     CAL_LIST=calList;
 end
@@ -1292,6 +1292,7 @@ global PARA_LIST;
 calList=get(handles.CalListbox,'String');
 selectValue=get(handles.CalListbox,'Value');
 if isempty(calList)
+   set(handles.ConfigListbox,'String',[]);
    return; 
 end
 selected_method=calList{selectValue,1};

@@ -75,8 +75,6 @@ for i=1:size(nirsfile,1)
     nirslist{i}=nirsfile(i).name(1:end-12);
 end
 set(handles.sublist,'String',nirslist);
-tmp=importdata(cd,'',nirsfile(1).name);
-handles.SD=tmp.SD;
 end
 %set default directory
 set(handles.output_directory,'String',fullfile(cd,'\','fc_Result'));
@@ -567,8 +565,27 @@ if get(handles.Buttion_wholebrain,'Value')
     fc_type='wholebrain';
 end
 if isempty(get(handles.sublist,'String'))
-    return;
+     for tmp=1:5
+           
+            set(handles.sublist,'BackgroundColor',[1 0 0]);
+          
+            pause(0.1);
+           
+             set(handles.sublist,'BackgroundColor',[243/255 222/255 187/255]);
+    
+            pause(0.1);
+        end
+
+        return;
 end
+
+directory=get(handles.input_directory,'String');
+sublist=get(handlels.sublist,'String');
+
+
+
+tmp=importdata(cd,'',nirsfile(1).name);
+handles.SD=tmp.SD;
 
 fc_analsysis_viewResult1(get(handles.output_directory,'String'),...
     get(handles.sublist,'String'),...

@@ -94,8 +94,8 @@ DISPLAY_STATE.color=[0 0 1;
              0.6 0.6 0.6;
              0.8 0.8 0.8];
 DISPLAY_DATA=[];
-SIGNAL_TYPE1={'proc Intensity'};
-SIGNAL_TYPE2={'raw Data';'proc OD';'raw Conc';'proc Conc'};
+SIGNAL_TYPE1={'RawData'};
+SIGNAL_TYPE2={'RawData';'OD';'RawConc';'Conc'};
 SIGNAL_TYPE3={'Wavelength1';'Wavelength2'};
 SIGNAL_TYPE4={'HbO';'HbR';'HbT'};
 
@@ -147,7 +147,7 @@ if ~isempty(datalist)
         DISPLAY_DATA.SD=DISPLAY_DATA.RawData.SD;
     end
 else 
-    msgbox('The selected input directory has no nirs or proc data.','warn'); 
+   % msgbox('The selected input directory has no nirs or proc data.','warn'); 
      set(handles.signal_type1,'Value',1);
     set(handles.signal_type2,'Value',1);
     set(handles.display_datalist,'Value',1);
@@ -398,7 +398,7 @@ if size(nirsfilelist,1)>0
     end
 else
     if size(procfilelist,1)>0
-        datalist=cell(size(procfilelist,1)); 
+        datalist=cell(size(procfilelist,1),1); 
         set(handles.signal_type1,'String',SIGNAL_TYPE2);
         set(handles.signal_type2,'String',SIGNAL_TYPE3);
         set(handles.signal_type1,'Value',1);
@@ -420,7 +420,7 @@ else
     set(handles.signal_type1,'Value',1);
     set(handles.signal_type2,'Value',1);
     set(handles.display_datalist,'Value',1);
-    set(handles.display_datalist,'String',{'None'});
+    set(handles.display_datalist,'String',[]);
     set(handles.signal_type1,'String',SIGNAL_TYPE1);
     set(handles.signal_type2,'String',SIGNAL_TYPE3);
     set(handles.signal_type1,'Enable','off');
@@ -483,6 +483,7 @@ sublist=get(handles.display_datalist,'String');
 selectValue=get(handles.display_datalist,'Value');
 showsignal=zeros(4,1);
 if isempty(sublist)
+    
 return;
 end
 subname=sublist{selectValue,1};
@@ -518,6 +519,12 @@ end
 %SIGNAL_TYPE2
 signal_type=SIGNAL_TYPE2(find(showsignal==1));
 set(handles.signal_type1,'String',signal_type);
+set(handles.signal_type1,'Value',1);
+global SIGNAL_TYPE3;
+DISPLAY_STATE.signal_type2=1;
+set(handles.signal_type2,'String',SIGNAL_TYPE3);
+set(handles.signal_type2,'Value',1);
+
 fc_NIRS_plotSDG(hObject, eventdata, handles);
 fc_NIRS_plotData(hObject, eventdata, handles);
 
